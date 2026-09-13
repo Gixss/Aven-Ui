@@ -1,53 +1,50 @@
 --[[
-    AvenUI v1.0
+    AvenUI v2.0
     Author  : Gixss
     Discord : https://discord.gg/q7PZBsbpD
-    License : MIT
-
-    Usage:
-        local AvenUI = loadstring(game:HttpGet("..."))()
-        local Window = AvenUI:CreateWindow({ Name = "My Hub", Icon = "sparkle" })
-        local Tab = Window:CreateTab("Main", "home")
-        Tab:Toggle({ Name = "Auto Farm", Icon = "bolt", Callback = function(v) end })
 ]]
 
 local AvenUI = {}
 AvenUI.__index = AvenUI
-AvenUI.Version = "1.0"
+AvenUI.Version = "2.0"
 
 local Players      = game:GetService("Players")
 local UserInput    = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local LP           = Players.LocalPlayer
 
+-- ═══════════════════════════════════════════════════════════
+--  THEME
+-- ═══════════════════════════════════════════════════════════
 local Theme = {
-    Bg         = Color3.fromRGB(10, 11, 14),
-    BgTop      = Color3.fromRGB(15, 17, 21),
-    BgSide     = Color3.fromRGB(12, 13, 17),
-    Item       = Color3.fromRGB(20, 22, 27),
-    ItemHover  = Color3.fromRGB(27, 30, 36),
-    Input      = Color3.fromRGB(14, 15, 19),
-    Track      = Color3.fromRGB(34, 37, 44),
-    Border     = Color3.fromRGB(30, 33, 40),
-    BorderSoft = Color3.fromRGB(22, 24, 29),
-    Text       = Color3.fromRGB(238, 240, 244),
-    SubText    = Color3.fromRGB(148, 155, 167),
-    Muted      = Color3.fromRGB(82, 88, 100),
-    Accent     = Color3.fromRGB(132, 204, 22),
-    AccentDim  = Color3.fromRGB(101, 163, 13),
-    Danger     = Color3.fromRGB(239, 68, 68),
-    Warn       = Color3.fromRGB(245, 158, 11),
-    Info       = Color3.fromRGB(59, 130, 246),
-    Success    = Color3.fromRGB(34, 197, 94),
-    Font       = Enum.Font.Gotham,
-    FontBold   = Enum.Font.GothamBold,
-    FontMed    = Enum.Font.GothamMedium,
-    FontBlack  = Enum.Font.GothamBlack,
-    Radius     = 10,
-    RadiusSm   = 7,
-    RadiusLg   = 14,
-    HeaderH    = 72,
-    SidebarW   = 168,
+    Bg          = Color3.fromRGB(10, 11, 14),
+    BgTop       = Color3.fromRGB(15, 16, 20),
+    BgTopEnd    = Color3.fromRGB(13, 14, 18),
+    BgSide      = Color3.fromRGB(12, 13, 17),
+    Item        = Color3.fromRGB(19, 20, 25),
+    ItemHover   = Color3.fromRGB(25, 27, 33),
+    Input       = Color3.fromRGB(13, 14, 18),
+    Track       = Color3.fromRGB(32, 35, 42),
+    Border      = Color3.fromRGB(28, 31, 38),
+    BorderSoft  = Color3.fromRGB(22, 24, 30),
+    BorderFocus = Color3.fromRGB(132, 204, 22),
+    Text        = Color3.fromRGB(237, 239, 243),
+    SubText     = Color3.fromRGB(155, 162, 174),
+    Muted       = Color3.fromRGB(78, 84, 96),
+    Accent      = Color3.fromRGB(132, 204, 22),
+    AccentDim   = Color3.fromRGB(101, 163, 13),
+    AccentSoft  = Color3.fromRGB(60, 92, 15),
+    AccentText  = Color3.fromRGB(10, 11, 14),
+    Danger      = Color3.fromRGB(239, 68, 68),
+    Font        = Enum.Font.Gotham,
+    FontBold    = Enum.Font.GothamBold,
+    FontMed     = Enum.Font.GothamMedium,
+    FontBlack   = Enum.Font.GothamBlack,
+    Radius      = 8,
+    RadiusSm    = 6,
+    RadiusLg    = 12,
+    HeaderH     = 62,
+    SidebarW    = 172,
 }
 AvenUI.Theme = Theme
 
@@ -58,13 +55,14 @@ end
 function AvenUI:GetTheme() return Theme end
 function AvenUI:SetAccent(c)
     Theme.Accent = c
-    Theme.AccentDim = Color3.new(
-        math.max(0, c.R - 0.15),
-        math.max(0, c.G - 0.18),
-        math.max(0, c.B - 0.03)
-    )
+    Theme.AccentDim = Color3.new(c.R * 0.76, c.G * 0.80, c.B * 0.59)
+    Theme.AccentSoft = Color3.new(c.R * 0.45, c.G * 0.45, c.B * 0.45)
+    Theme.BorderFocus = c
 end
 
+-- ═══════════════════════════════════════════════════════════
+--  HELPERS
+-- ═══════════════════════════════════════════════════════════
 local function mk(c, p)
     local o = Instance.new(c)
     for k, v in pairs(p or {}) do o[k] = v end
@@ -74,7 +72,7 @@ local function cr(o, r) return mk("UICorner", { CornerRadius = UDim.new(0, r or 
 local function st(o, col, th) return mk("UIStroke", { Color = col or Theme.Border, Thickness = th or 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border, Parent = o }) end
 local function pd(o, t, r, b, l) return mk("UIPadding", { PaddingTop = UDim.new(0, t or 0), PaddingRight = UDim.new(0, r or t or 0), PaddingBottom = UDim.new(0, b or t or 0), PaddingLeft = UDim.new(0, l or r or t or 0), Parent = o }) end
 local function tw(o, ti, props, style, dir)
-    TweenService:Create(o, TweenInfo.new(ti or 0.2, style or Enum.EasingStyle.Quart, dir or Enum.EasingDirection.Out), props):Play()
+    TweenService:Create(o, TweenInfo.new(ti or 0.22, style or Enum.EasingStyle.Quart, dir or Enum.EasingDirection.Out), props):Play()
 end
 local function parentGui()
     local ok, h = pcall(function() return gethui() end)
@@ -89,9 +87,7 @@ local function drag(frame, handle)
     handle.InputBegan:Connect(function(i)
         if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
             dr = true; ds = i.Position; sp = frame.Position
-            i.Changed:Connect(function()
-                if i.UserInputState == Enum.UserInputState.End then dr = false end
-            end)
+            i.Changed:Connect(function() if i.UserInputState == Enum.UserInputState.End then dr = false end end)
         end
     end)
     handle.InputChanged:Connect(function(i)
@@ -107,7 +103,7 @@ end
 local function round(v, inc) return math.floor(v / inc + 0.5) * inc end
 
 -- ═══════════════════════════════════════════════════════════
---  ICON SYSTEM
+--  ICONS
 -- ═══════════════════════════════════════════════════════════
 local Icon = {}
 AvenUI.Icon = Icon
@@ -118,7 +114,7 @@ local function sO(p, x, y, w, h, r, c, th, rot)
         BackgroundTransparency = 1, BorderSizePixel = 0,
         Rotation = rot or 0, Parent = p,
     })
-    cr(f, r or 0); st(f, c, th or 1.4)
+    cr(f, r or 0); st(f, c, th or 1.8)
     return f
 end
 local function fF(p, x, y, w, h, r, c, rot)
@@ -130,7 +126,7 @@ local function fF(p, x, y, w, h, r, c, rot)
     if r then cr(f, r) end
     return f
 end
-local function cS(p, cx, cy, r, c, th) return sO(p, cx - r, cy - r, r * 2, r * 2, r * 2, c, th or 1.4) end
+local function cS(p, cx, cy, r, c, th) return sO(p, cx - r, cy - r, r * 2, r * 2, r * 2, c, th or 1.8) end
 local function cF(p, cx, cy, r, c) return fF(p, cx - r, cy - r, r * 2, r * 2, r * 2, c) end
 
 local D = {}
@@ -138,50 +134,49 @@ local D = {}
 D["gear"] = function(p, s, c)
     for i = 0, 7 do
         local a = math.rad(i * 45)
-        local t = fF(p, 0, 0, s * 0.15, s * 0.15, 1.5, c, i * 45)
+        local t = fF(p, 0, 0, s * 0.14, s * 0.14, 1.5, c, i * 45)
         t.AnchorPoint = Vector2.new(0.5, 0.5)
         t.Position = UDim2.new(0.5, math.cos(a) * s * 0.4, 0.5, math.sin(a) * s * 0.4)
     end
-    cS(p, s/2, s/2, s * 0.36, c, 1.7)
-    cS(p, s/2, s/2, s * 0.1, c, 1.7)
+    cS(p, s/2, s/2, s * 0.34, c, 1.8)
+    cS(p, s/2, s/2, s * 0.1, c, 1.8)
 end
 D["settings"] = D["gear"]; D["cog"] = D["gear"]
 
 D["home"] = function(p, s, c)
-    local l = sO(p, 0, 0, s * 0.5, 1.4, 0, c, 1.6, -43)
+    local l = sO(p, 0, 0, s * 0.5, 1.8, 0, c, 1.8, -43)
     l.AnchorPoint = Vector2.new(0.5, 0.5); l.Position = UDim2.new(0.32, 0, 0.34, 0)
-    local r = sO(p, 0, 0, s * 0.5, 1.4, 0, c, 1.6, 43)
+    local r = sO(p, 0, 0, s * 0.5, 1.8, 0, c, 1.8, 43)
     r.AnchorPoint = Vector2.new(0.5, 0.5); r.Position = UDim2.new(0.68, 0, 0.34, 0)
-    sO(p, s * 0.22, s * 0.55, s * 0.56, s * 0.33, 1, c, 1.6)
+    sO(p, s * 0.22, s * 0.55, s * 0.56, s * 0.33, 1, c, 1.8)
 end
 D["house"] = D["home"]
 
 D["user"] = function(p, s, c)
-    cS(p, s/2, s * 0.32, s * 0.17, c, 1.6)
-    local b = sO(p, s * 0.2, s * 0.6, s * 0.6, s * 0.55, s * 0.5, c, 1.6)
+    cS(p, s/2, s * 0.32, s * 0.17, c, 1.8)
+    local b = sO(p, s * 0.2, s * 0.6, s * 0.6, s * 0.55, s * 0.5, c, 1.8)
     b.ClipsDescendants = true
 end
 D["profile"] = D["user"]; D["account"] = D["user"]
 
 D["search"] = function(p, s, c)
-    cS(p, s * 0.42, s * 0.42, s * 0.23, c, 1.7)
-    local h = sO(p, 0, 0, s * 0.28, 1.6, 0, c, 1.7, 45)
+    cS(p, s * 0.42, s * 0.42, s * 0.23, c, 1.8)
+    local h = sO(p, 0, 0, s * 0.28, 1.8, 0, c, 1.8, 45)
     h.AnchorPoint = Vector2.new(0.5, 0.5); h.Position = UDim2.new(0.74, 0, 0.74, 0)
 end
-D["find"] = D["search"]
 
 D["close"] = function(p, s, c)
-    local a = sO(p, 0, 0, s * 0.7, 1.7, 0, c, 0, 45)
+    local a = sO(p, 0, 0, s * 0.68, 1.8, 0, c, 0, 45)
     a.AnchorPoint = Vector2.new(0.5, 0.5); a.Position = UDim2.new(0.5, 0, 0.5, 0)
-    local b = sO(p, 0, 0, s * 0.7, 1.7, 0, c, 0, -45)
+    local b = sO(p, 0, 0, s * 0.68, 1.8, 0, c, 0, -45)
     b.AnchorPoint = Vector2.new(0.5, 0.5); b.Position = UDim2.new(0.5, 0, 0.5, 0)
 end
 D["x"] = D["close"]; D["exit"] = D["close"]
 
 D["check"] = function(p, s, c)
-    local a = sO(p, 0, 0, s * 0.32, 1.7, 0, c, 0, 45)
+    local a = sO(p, 0, 0, s * 0.32, 1.8, 0, c, 0, 45)
     a.AnchorPoint = Vector2.new(0.5, 0.5); a.Position = UDim2.new(0.32, 0, 0.55, 0)
-    local b = sO(p, 0, 0, s * 0.62, 1.7, 0, c, 0, -45)
+    local b = sO(p, 0, 0, s * 0.62, 1.8, 0, c, 0, -45)
     b.AnchorPoint = Vector2.new(0.5, 0.5); b.Position = UDim2.new(0.6, 0, 0.48, 0)
 end
 D["tick"] = D["check"]
@@ -190,56 +185,46 @@ D["plus"] = function(p, s, c)
     fF(p, s * 0.44, s * 0.18, s * 0.12, s * 0.64, 1, c)
     fF(p, s * 0.18, s * 0.44, s * 0.64, s * 0.12, 1, c)
 end
-D["add"] = D["plus"]
-
 D["minus"] = function(p, s, c)
     fF(p, s * 0.18, s * 0.44, s * 0.64, s * 0.12, 1, c)
 end
-D["remove"] = D["minus"]
 
-D["chevron-right"] = function(p, s, c)
-    local a = sO(p, 0, 0, s * 0.32, 1.7, 0, c, 0, 45)
-    a.AnchorPoint = Vector2.new(0.5, 0.5); a.Position = UDim2.new(0.42, 0, 0.3, 0)
-    local b = sO(p, 0, 0, s * 0.32, 1.7, 0, c, 0, -45)
-    b.AnchorPoint = Vector2.new(0.5, 0.5); b.Position = UDim2.new(0.42, 0, 0.7, 0)
-end
-D["chevron-left"] = function(p, s, c)
-    local a = sO(p, 0, 0, s * 0.32, 1.7, 0, c, 0, -45)
-    a.AnchorPoint = Vector2.new(0.5, 0.5); a.Position = UDim2.new(0.58, 0, 0.3, 0)
-    local b = sO(p, 0, 0, s * 0.32, 1.7, 0, c, 0, 45)
-    b.AnchorPoint = Vector2.new(0.5, 0.5); b.Position = UDim2.new(0.58, 0, 0.7, 0)
-end
 D["chevron-down"] = function(p, s, c)
-    local a = sO(p, 0, 0, s * 0.32, 1.7, 0, c, 0, 45)
+    local a = sO(p, 0, 0, s * 0.32, 1.8, 0, c, 0, 45)
     a.AnchorPoint = Vector2.new(0.5, 0.5); a.Position = UDim2.new(0.3, 0, 0.42, 0)
-    local b = sO(p, 0, 0, s * 0.32, 1.7, 0, c, 0, -45)
+    local b = sO(p, 0, 0, s * 0.32, 1.8, 0, c, 0, -45)
     b.AnchorPoint = Vector2.new(0.5, 0.5); b.Position = UDim2.new(0.7, 0, 0.42, 0)
 end
 D["chevron-up"] = function(p, s, c)
-    local a = sO(p, 0, 0, s * 0.32, 1.7, 0, c, 0, -45)
+    local a = sO(p, 0, 0, s * 0.32, 1.8, 0, c, 0, -45)
     a.AnchorPoint = Vector2.new(0.5, 0.5); a.Position = UDim2.new(0.3, 0, 0.58, 0)
-    local b = sO(p, 0, 0, s * 0.32, 1.7, 0, c, 0, 45)
+    local b = sO(p, 0, 0, s * 0.32, 1.8, 0, c, 0, 45)
     b.AnchorPoint = Vector2.new(0.5, 0.5); b.Position = UDim2.new(0.7, 0, 0.58, 0)
 end
 
 D["bell"] = function(p, s, c)
-    sO(p, s * 0.18, s * 0.2, s * 0.64, s * 0.62, s * 0.36, c, 1.7)
-    fF(p, s * 0.24, s * 0.78, s * 0.52, 1.6, 1, c)
+    sO(p, s * 0.18, s * 0.2, s * 0.64, s * 0.62, s * 0.36, c, 1.8)
+    fF(p, s * 0.24, s * 0.78, s * 0.52, 1.7, 1, c)
     cF(p, s / 2, s * 0.9, s * 0.055, c)
 end
 D["notif"] = D["bell"]; D["notification"] = D["bell"]
 
 D["lock"] = function(p, s, c)
-    local sh = sO(p, s * 0.3, s * 0.14, s * 0.4, s * 0.4, s * 0.2, c, 1.7)
+    local sh = sO(p, s * 0.3, s * 0.14, s * 0.4, s * 0.4, s * 0.2, c, 1.8)
     sh.ClipsDescendants = true
-    sO(p, s * 0.22, s * 0.46, s * 0.56, s * 0.42, 2, c, 1.7)
+    sO(p, s * 0.22, s * 0.46, s * 0.56, s * 0.42, 2, c, 1.8)
     cF(p, s / 2, s * 0.68, s * 0.055, c)
 end
-D["secure"] = D["lock"]
+D["shield"] = function(p, s, c)
+    sO(p, s * 0.2, s * 0.14, s * 0.6, s * 0.36, 2, c, 1.8)
+    local b = sO(p, 0, 0, s * 0.44, s * 0.44, 2, c, 1.8, 45)
+    b.AnchorPoint = Vector2.new(0.5, 0.5); b.Position = UDim2.new(0.5, 0, 0.7, 0)
+end
+D["protect"] = D["shield"]
 
 D["eye"] = function(p, s, c)
-    sO(p, s * 0.1, s * 0.34, s * 0.8, s * 0.32, s * 0.3, c, 1.7)
-    cS(p, s / 2, s / 2, s * 0.13, c, 1.7)
+    sO(p, s * 0.1, s * 0.34, s * 0.8, s * 0.32, s * 0.3, c, 1.8)
+    cS(p, s / 2, s / 2, s * 0.13, c, 1.8)
     cF(p, s / 2, s / 2, s * 0.05, c)
 end
 D["view"] = D["eye"]
@@ -252,58 +237,51 @@ D["star"] = function(p, s, c)
         leg.Position = UDim2.new(0.5 + math.cos(a) * 0.08, 0, 0.5 + math.sin(a) * 0.08, 0)
     end
 end
-D["favorite"] = D["star"]
+D["sparkle"] = function(p, s, c)
+    local a = fF(p, 0, 0, s * 0.13, s * 0.62, 1, c)
+    a.AnchorPoint = Vector2.new(0.5, 0.5); a.Position = UDim2.new(0.5, 0, 0.5, 0)
+    local b = fF(p, 0, 0, s * 0.62, s * 0.13, 1, c)
+    b.AnchorPoint = Vector2.new(0.5, 0.5); b.Position = UDim2.new(0.5, 0, 0.5, 0)
+end
 
 D["heart"] = function(p, s, c)
     cF(p, s * 0.35, s * 0.38, s * 0.18, c)
     cF(p, s * 0.65, s * 0.38, s * 0.18, c)
     fF(p, s * 0.26, s * 0.32, s * 0.48, s * 0.48, 2, c, 45)
 end
-D["like"] = D["heart"]
 
 D["info"] = function(p, s, c)
-    cS(p, s / 2, s / 2, s * 0.37, c, 1.7)
+    cS(p, s / 2, s / 2, s * 0.36, c, 1.8)
     cF(p, s / 2, s * 0.32, s * 0.055, c)
     fF(p, s * 0.46, s * 0.44, s * 0.08, s * 0.3, 1, c)
 end
-D["about"] = D["info"]
 
 D["warning"] = function(p, s, c)
-    local t = fF(p, 0, 0, s * 0.72, s * 0.72, 2, c, 45)
+    local t = fF(p, 0, 0, s * 0.7, s * 0.7, 2, c, 45)
     t.AnchorPoint = Vector2.new(0.5, 0.5); t.Position = UDim2.new(0.5, 0, 0.56, 0)
     fF(p, s * 0.46, s * 0.42, s * 0.08, s * 0.2, 1, Theme.Bg)
     cF(p, s / 2, s * 0.74, s * 0.045, Theme.Bg)
 end
-D["alert"] = D["warning"]
-
-D["shield"] = function(p, s, c)
-    sO(p, s * 0.2, s * 0.14, s * 0.6, s * 0.36, 2, c, 1.7)
-    local b = sO(p, 0, 0, s * 0.44, s * 0.44, 2, c, 1.7, 45)
-    b.AnchorPoint = Vector2.new(0.5, 0.5); b.Position = UDim2.new(0.5, 0, 0.7, 0)
-end
-D["protect"] = D["shield"]
 
 D["sword"] = function(p, s, c)
-    local b = sO(p, 0, 0, s * 0.62, 1.7, 0, c, 0, 45)
+    local b = sO(p, 0, 0, s * 0.62, 1.8, 0, c, 0, 45)
     b.AnchorPoint = Vector2.new(0.5, 0.5); b.Position = UDim2.new(0.44, 0, 0.44, 0)
-    local g = sO(p, 0, 0, 1.7, s * 0.24, 0, c, 0, 45)
+    local g = sO(p, 0, 0, 1.8, s * 0.24, 0, c, 0, 45)
     g.AnchorPoint = Vector2.new(0.5, 0.5); g.Position = UDim2.new(0.74, 0, 0.74, 0)
-    local h = sO(p, 0, 0, s * 0.22, 1.7, 0, c, 0, 45)
-    h.AnchorPoint = Vector2.new(0.5, 0.5); h.Position = UDim2.new(0.84, 0, 0.84, 0)
 end
 D["combat"] = D["sword"]
 
 D["code"] = function(p, s, c)
-    local a = sO(p, 0, 0, s * 0.36, 1.7, 0, c, 0, -45)
+    local a = sO(p, 0, 0, s * 0.36, 1.8, 0, c, 0, -45)
     a.AnchorPoint = Vector2.new(0.5, 0.5); a.Position = UDim2.new(0.28, 0, 0.35, 0)
-    local b = sO(p, 0, 0, s * 0.36, 1.7, 0, c, 0, 45)
+    local b = sO(p, 0, 0, s * 0.36, 1.8, 0, c, 0, 45)
     b.AnchorPoint = Vector2.new(0.5, 0.5); b.Position = UDim2.new(0.28, 0, 0.65, 0)
-    local d = sO(p, 0, 0, s * 0.36, 1.7, 0, c, 0, 45)
+    local d = sO(p, 0, 0, s * 0.36, 1.8, 0, c, 0, 45)
     d.AnchorPoint = Vector2.new(0.5, 0.5); d.Position = UDim2.new(0.72, 0, 0.35, 0)
-    local e = sO(p, 0, 0, s * 0.36, 1.7, 0, c, 0, -45)
+    local e = sO(p, 0, 0, s * 0.36, 1.8, 0, c, 0, -45)
     e.AnchorPoint = Vector2.new(0.5, 0.5); e.Position = UDim2.new(0.72, 0, 0.65, 0)
 end
-D["dev"] = D["code"]; D["script"] = D["code"]; D["terminal"] = D["code"]
+D["dev"] = D["code"]; D["script"] = D["code"]
 
 D["bolt"] = function(p, s, c)
     local a = fF(p, 0, 0, s * 0.15, s * 0.35, 1, c, -25)
@@ -324,68 +302,103 @@ D["pause"] = function(p, s, c)
 end
 
 D["trash"] = function(p, s, c)
-    fF(p, s * 0.28, s * 0.14, s * 0.44, 1.6, 0, c)
-    fF(p, s * 0.4, s * 0.1, s * 0.2, 1.6, 0, c)
-    sO(p, s * 0.3, s * 0.26, s * 0.4, s * 0.56, 1, c, 1.5)
+    fF(p, s * 0.28, s * 0.14, s * 0.44, 1.7, 0, c)
+    fF(p, s * 0.4, s * 0.1, s * 0.2, 1.7, 0, c)
+    sO(p, s * 0.3, s * 0.26, s * 0.4, s * 0.56, 1, c, 1.7)
 end
 D["delete"] = D["trash"]
 
-D["edit"] = function(p, s, c)
-    local pn = fF(p, 0, 0, s * 0.18, s * 0.6, 1, c, 45)
-    pn.AnchorPoint = Vector2.new(0.5, 0.5); pn.Position = UDim2.new(0.5, 0, 0.5, 0)
-    fF(p, s * 0.66, s * 0.14, s * 0.16, s * 0.16, 1, c, 45)
-end
-D["pencil"] = D["edit"]
-
 D["copy"] = function(p, s, c)
-    sO(p, s * 0.16, s * 0.16, s * 0.46, s * 0.52, 2, c, 1.5)
-    sO(p, s * 0.4, s * 0.34, s * 0.46, s * 0.52, 2, c, 1.5)
+    sO(p, s * 0.16, s * 0.16, s * 0.46, s * 0.52, 2, c, 1.7)
+    sO(p, s * 0.4, s * 0.34, s * 0.46, s * 0.52, 2, c, 1.7)
 end
 
-D["download"] = function(p, s, c)
-    sO(p, s * 0.5 - 0.8, s * 0.16, 1.6, s * 0.32, 0, c, 0, 0)
-    local a = sO(p, 0, 0, s * 0.24, 1.5, 0, c, 0, 45)
-    a.AnchorPoint = Vector2.new(0.5, 0.5); a.Position = UDim2.new(0.32, 0, 0.58, 0)
-    local b = sO(p, 0, 0, s * 0.24, 1.5, 0, c, 0, -45)
-    b.AnchorPoint = Vector2.new(0.5, 0.5); b.Position = UDim2.new(0.68, 0, 0.58, 0)
-    sO(p, s * 0.28, s * 0.78, s * 0.44, 1.5, 0, c, 0, 0)
+D["link"] = function(p, s, c)
+    cS(p, s * 0.35, s * 0.5, s * 0.16, c, 1.8)
+    cS(p, s * 0.65, s * 0.5, s * 0.16, c, 1.8)
+    fF(p, s * 0.35, s * 0.46, s * 0.3, 1.7, 0, c)
 end
 
-D["upload"] = function(p, s, c)
-    sO(p, s * 0.5 - 0.8, s * 0.16, 1.6, s * 0.32, 0, c, 0, 0)
-    local a = sO(p, 0, 0, s * 0.24, 1.5, 0, c, 0, -45)
-    a.AnchorPoint = Vector2.new(0.5, 0.5); a.Position = UDim2.new(0.32, 0, 0.42, 0)
-    local b = sO(p, 0, 0, s * 0.24, 1.5, 0, c, 0, 45)
-    b.AnchorPoint = Vector2.new(0.5, 0.5); b.Position = UDim2.new(0.68, 0, 0.42, 0)
-    sO(p, s * 0.28, s * 0.78, s * 0.44, 1.5, 0, c, 0, 0)
+D["refresh"] = function(p, s, c)
+    cS(p, s / 2, s / 2, s * 0.31, c, 1.8)
+    local a = sO(p, 0, 0, s * 0.15, 1.7, 0, c, 0, 45)
+    a.AnchorPoint = Vector2.new(0.5, 0.5); a.Position = UDim2.new(0.76, 0, 0.24, 0)
+    local b = sO(p, 0, 0, s * 0.15, 1.7, 0, c, 0, -45)
+    b.AnchorPoint = Vector2.new(0.5, 0.5); b.Position = UDim2.new(0.86, 0, 0.3, 0)
+end
+D["reload"] = D["refresh"]
+
+D["sun"] = function(p, s, c)
+    cS(p, s / 2, s / 2, s * 0.2, c, 1.8)
+    for i = 0, 7 do
+        local a = math.rad(i * 45)
+        local ray = fF(p, 0, 0, 1.8, s * 0.13, 0, c, i * 45)
+        ray.AnchorPoint = Vector2.new(0.5, 0.5)
+        ray.Position = UDim2.new(0.5 + math.cos(a) * 0.38, 0, 0.5 + math.sin(a) * 0.38, 0)
+    end
+end
+
+D["key"] = function(p, s, c)
+    cS(p, s * 0.34, s * 0.5, s * 0.17, c, 1.8)
+    cF(p, s * 0.34, s * 0.5, s * 0.055, c)
+    fF(p, s * 0.5, s * 0.47, s * 0.32, 1.7, 0, c)
+    fF(p, s * 0.72, s * 0.47, 1.7, s * 0.14, 0, c)
+end
+
+D["menu"] = function(p, s, c)
+    fF(p, s * 0.18, s * 0.3, s * 0.64, 1.8, 1, c)
+    fF(p, s * 0.18, s * 0.48, s * 0.64, 1.8, 1, c)
+    fF(p, s * 0.18, s * 0.66, s * 0.64, 1.8, 1, c)
+end
+D["list"] = D["menu"]
+
+D["grid"] = function(p, s, c)
+    fF(p, s * 0.15, s * 0.15, s * 0.3, s * 0.3, 2, c)
+    fF(p, s * 0.55, s * 0.15, s * 0.3, s * 0.3, 2, c)
+    fF(p, s * 0.15, s * 0.55, s * 0.3, s * 0.3, 2, c)
+    fF(p, s * 0.55, s * 0.55, s * 0.3, s * 0.3, 2, c)
+end
+
+D["discord"] = function(p, s, c)
+    sO(p, s * 0.14, s * 0.28, s * 0.72, s * 0.44, s * 0.24, c, 1.8)
+    cF(p, s * 0.38, s * 0.5, s * 0.06, c)
+    cF(p, s * 0.62, s * 0.5, s * 0.06, c)
+end
+
+D["globe"] = function(p, s, c)
+    cS(p, s / 2, s / 2, s * 0.36, c, 1.8)
+    sO(p, s / 2 - 0.9, s * 0.14, 1.8, s * 0.72, 0, c, 0, 0)
+    sO(p, s * 0.14, s / 2 - 0.9, s * 0.72, 1.8, 0, c, 0, 0)
 end
 
 D["folder"] = function(p, s, c)
     fF(p, s * 0.14, s * 0.24, s * 0.22, s * 0.1, 1, c)
-    sO(p, s * 0.14, s * 0.32, s * 0.72, s * 0.52, 2, c, 1.5)
+    sO(p, s * 0.14, s * 0.32, s * 0.72, s * 0.52, 2, c, 1.7)
 end
 
 D["file"] = function(p, s, c)
-    sO(p, s * 0.24, s * 0.14, s * 0.52, s * 0.74, 2, c, 1.5)
-    local f = sO(p, 0, 0, s * 0.24, 1.5, 0, c, 0, 45)
+    sO(p, s * 0.24, s * 0.14, s * 0.52, s * 0.74, 2, c, 1.7)
+    local f = sO(p, 0, 0, s * 0.24, 1.7, 0, c, 0, 45)
     f.AnchorPoint = Vector2.new(0.5, 0.5); f.Position = UDim2.new(0.62, 0, 0.22, 0)
 end
-D["document"] = D["file"]
 
-D["link"] = function(p, s, c)
-    cS(p, s * 0.35, s * 0.5, s * 0.16, c, 1.6)
-    cS(p, s * 0.65, s * 0.5, s * 0.16, c, 1.6)
-    fF(p, s * 0.35, s * 0.46, s * 0.3, 1.5, 0, c)
+D["crosshair"] = function(p, s, c)
+    cS(p, s / 2, s / 2, s * 0.32, c, 1.8)
+    fF(p, s * 0.5 - 0.9, s * 0.1, 1.8, s * 0.16, 0, c)
+    fF(p, s * 0.5 - 0.9, s * 0.74, 1.8, s * 0.16, 0, c)
+    fF(p, s * 0.1, s * 0.5 - 0.9, s * 0.16, 1.8, 0, c)
+    fF(p, s * 0.74, s * 0.5 - 0.9, s * 0.16, 1.8, 0, c)
+    cF(p, s / 2, s / 2, s * 0.045, c)
 end
+D["aim"] = D["crosshair"]
 
-D["cart"] = function(p, s, c)
-    sO(p, s * 0.14, s * 0.28, s * 0.62, s * 0.38, 2, c, 1.5)
-    local h = sO(p, 0, 0, s * 0.24, 1.5, 0, c, 0, 25)
-    h.AnchorPoint = Vector2.new(0.5, 0.5); h.Position = UDim2.new(0.2, 0, 0.22, 0)
-    cF(p, s * 0.32, s * 0.8, s * 0.075, c)
-    cF(p, s * 0.66, s * 0.8, s * 0.075, c)
+D["pin"] = function(p, s, c)
+    cS(p, s / 2, s * 0.4, s * 0.23, c, 1.8)
+    cF(p, s / 2, s * 0.4, s * 0.085, c)
+    local t = fF(p, 0, 0, s * 0.28, s * 0.28, 1, c, 45)
+    t.AnchorPoint = Vector2.new(0.5, 0.5); t.Position = UDim2.new(0.5, 0, 0.74, 0)
 end
-D["shop"] = D["cart"]; D["store"] = D["cart"]
+D["location"] = D["pin"]
 
 D["crown"] = function(p, s, c)
     fF(p, s * 0.18, s * 0.62, s * 0.64, s * 0.2, 1, c)
@@ -402,7 +415,7 @@ end
 D["vip"] = D["crown"]
 
 D["diamond"] = function(p, s, c)
-    local d = fF(p, 0, 0, s * 0.52, s * 0.52, 2, c, 45)
+    local d = fF(p, 0, 0, s * 0.5, s * 0.5, 2, c, 45)
     d.AnchorPoint = Vector2.new(0.5, 0.5); d.Position = UDim2.new(0.5, 0, 0.5, 0)
 end
 D["gem"] = D["diamond"]
@@ -416,118 +429,34 @@ D["fire"] = function(p, s, c)
 end
 D["flame"] = D["fire"]
 
-D["sun"] = function(p, s, c)
-    cS(p, s / 2, s / 2, s * 0.2, c, 1.6)
-    for i = 0, 7 do
-        local a = math.rad(i * 45)
-        local ray = fF(p, 0, 0, 1.6, s * 0.13, 0, c, i * 45)
-        ray.AnchorPoint = Vector2.new(0.5, 0.5)
-        ray.Position = UDim2.new(0.5 + math.cos(a) * 0.38, 0, 0.5 + math.sin(a) * 0.38, 0)
-    end
+D["edit"] = function(p, s, c)
+    local pn = fF(p, 0, 0, s * 0.18, s * 0.6, 1, c, 45)
+    pn.AnchorPoint = Vector2.new(0.5, 0.5); pn.Position = UDim2.new(0.5, 0, 0.5, 0)
+    fF(p, s * 0.66, s * 0.14, s * 0.16, s * 0.16, 1, c, 45)
 end
 
-D["moon"] = function(p, s, c)
-    fF(p, s * 0.22, s * 0.22, s * 0.56, s * 0.56, s * 0.56, c)
-    cF(p, s * 0.62, s * 0.42, s * 0.28, Theme.Bg)
+D["download"] = function(p, s, c)
+    sO(p, s * 0.5 - 0.9, s * 0.16, 1.8, s * 0.32, 0, c, 0, 0)
+    local a = sO(p, 0, 0, s * 0.24, 1.7, 0, c, 0, 45)
+    a.AnchorPoint = Vector2.new(0.5, 0.5); a.Position = UDim2.new(0.32, 0, 0.58, 0)
+    local b = sO(p, 0, 0, s * 0.24, 1.7, 0, c, 0, -45)
+    b.AnchorPoint = Vector2.new(0.5, 0.5); b.Position = UDim2.new(0.68, 0, 0.58, 0)
+    sO(p, s * 0.28, s * 0.78, s * 0.44, 1.7, 0, c, 0, 0)
 end
 
-D["wifi"] = function(p, s, c)
-    for i = 1, 3 do
-        local a = sO(p, 0, 0, s * (0.2 + i * 0.18), s * 0.1, s * 0.3, c, 1.5)
-        a.AnchorPoint = Vector2.new(0.5, 1)
-        a.Position = UDim2.new(0.5, 0, 0.75, 0)
-    end
-    cF(p, s * 0.5, s * 0.78, s * 0.055, c)
+D["upload"] = function(p, s, c)
+    sO(p, s * 0.5 - 0.9, s * 0.16, 1.8, s * 0.32, 0, c, 0, 0)
+    local a = sO(p, 0, 0, s * 0.24, 1.7, 0, c, 0, -45)
+    a.AnchorPoint = Vector2.new(0.5, 0.5); a.Position = UDim2.new(0.32, 0, 0.42, 0)
+    local b = sO(p, 0, 0, s * 0.24, 1.7, 0, c, 0, 45)
+    b.AnchorPoint = Vector2.new(0.5, 0.5); b.Position = UDim2.new(0.68, 0, 0.42, 0)
+    sO(p, s * 0.28, s * 0.78, s * 0.44, 1.7, 0, c, 0, 0)
 end
-
-D["volume"] = function(p, s, c)
-    fF(p, s * 0.2, s * 0.4, s * 0.16, s * 0.2, 1, c)
-    local t = fF(p, 0, 0, s * 0.26, s * 0.26, 1, c, 45)
-    t.AnchorPoint = Vector2.new(0.5, 0.5); t.Position = UDim2.new(0.45, 0, 0.5, 0)
-    for i = 1, 2 do
-        local a = sO(p, 0, 0, s * (0.14 + i * 0.16), s * (0.14 + i * 0.16), s, c, 1.5)
-        a.AnchorPoint = Vector2.new(0.5, 0.5); a.Position = UDim2.new(0.5, 0, 0.5, 0)
-    end
-end
-
-D["key"] = function(p, s, c)
-    cS(p, s * 0.34, s * 0.5, s * 0.17, c, 1.6)
-    cF(p, s * 0.34, s * 0.5, s * 0.055, c)
-    fF(p, s * 0.5, s * 0.47, s * 0.32, 1.6, 0, c)
-    fF(p, s * 0.72, s * 0.47, 1.6, s * 0.14, 0, c)
-end
-
-D["tag"] = function(p, s, c)
-    local d = fF(p, 0, 0, s * 0.62, s * 0.62, 2, c, 45)
-    d.AnchorPoint = Vector2.new(0.5, 0.5); d.Position = UDim2.new(0.5, 0, 0.5, 0)
-    cF(p, s * 0.62, s * 0.38, s * 0.065, Theme.Bg)
-end
-
-D["crosshair"] = function(p, s, c)
-    cS(p, s / 2, s / 2, s * 0.32, c, 1.6)
-    fF(p, s * 0.5 - 0.8, s * 0.1, 1.6, s * 0.16, 0, c)
-    fF(p, s * 0.5 - 0.8, s * 0.74, 1.6, s * 0.16, 0, c)
-    fF(p, s * 0.1, s * 0.5 - 0.8, s * 0.16, 1.6, 0, c)
-    fF(p, s * 0.74, s * 0.5 - 0.8, s * 0.16, 1.6, 0, c)
-    cF(p, s / 2, s / 2, s * 0.045, c)
-end
-D["target"] = D["crosshair"]; D["aim"] = D["crosshair"]
-
-D["pin"] = function(p, s, c)
-    cS(p, s / 2, s * 0.4, s * 0.23, c, 1.6)
-    cF(p, s / 2, s * 0.4, s * 0.085, c)
-    local t = fF(p, 0, 0, s * 0.28, s * 0.28, 1, c, 45)
-    t.AnchorPoint = Vector2.new(0.5, 0.5); t.Position = UDim2.new(0.5, 0, 0.74, 0)
-end
-D["location"] = D["pin"]; D["map"] = D["pin"]
-
-D["menu"] = function(p, s, c)
-    fF(p, s * 0.18, s * 0.3, s * 0.64, 1.7, 1, c)
-    fF(p, s * 0.18, s * 0.48, s * 0.64, 1.7, 1, c)
-    fF(p, s * 0.18, s * 0.66, s * 0.64, 1.7, 1, c)
-end
-D["list"] = D["menu"]
-
-D["refresh"] = function(p, s, c)
-    cS(p, s / 2, s / 2, s * 0.31, c, 1.6)
-    local a = sO(p, 0, 0, s * 0.15, 1.5, 0, c, 0, 45)
-    a.AnchorPoint = Vector2.new(0.5, 0.5); a.Position = UDim2.new(0.76, 0, 0.24, 0)
-    local b = sO(p, 0, 0, s * 0.15, 1.5, 0, c, 0, -45)
-    b.AnchorPoint = Vector2.new(0.5, 0.5); b.Position = UDim2.new(0.86, 0, 0.3, 0)
-end
-D["reload"] = D["refresh"]; D["sync"] = D["refresh"]
-
-D["sparkle"] = function(p, s, c)
-    local a = fF(p, 0, 0, s * 0.13, s * 0.62, 1, c)
-    a.AnchorPoint = Vector2.new(0.5, 0.5); a.Position = UDim2.new(0.5, 0, 0.5, 0)
-    local b = fF(p, 0, 0, s * 0.62, s * 0.13, 1, c)
-    b.AnchorPoint = Vector2.new(0.5, 0.5); b.Position = UDim2.new(0.5, 0, 0.5, 0)
-end
-
-D["discord"] = function(p, s, c)
-    sO(p, s * 0.14, s * 0.28, s * 0.72, s * 0.44, s * 0.24, c, 1.6)
-    cF(p, s * 0.38, s * 0.5, s * 0.06, c)
-    cF(p, s * 0.62, s * 0.5, s * 0.06, c)
-end
-
-D["globe"] = function(p, s, c)
-    cS(p, s / 2, s / 2, s * 0.36, c, 1.6)
-    sO(p, s / 2 - 0.7, s * 0.14, 1.4, s * 0.72, 0, c, 0, 0)
-    sO(p, s * 0.14, s / 2 - 0.7, s * 0.72, 1.4, 0, c, 0, 0)
-end
-D["world"] = D["globe"]
 
 D["filter"] = function(p, s, c)
-    fF(p, s * 0.15, s * 0.25, s * 0.7, 1.7, 0, c)
-    fF(p, s * 0.28, s * 0.47, s * 0.44, 1.7, 0, c)
-    fF(p, s * 0.4, s * 0.69, s * 0.2, 1.7, 0, c)
-end
-
-D["grid"] = function(p, s, c)
-    fF(p, s * 0.15, s * 0.15, s * 0.3, s * 0.3, 2, c)
-    fF(p, s * 0.55, s * 0.15, s * 0.3, s * 0.3, 2, c)
-    fF(p, s * 0.15, s * 0.55, s * 0.3, s * 0.3, 2, c)
-    fF(p, s * 0.55, s * 0.55, s * 0.3, s * 0.3, 2, c)
+    fF(p, s * 0.15, s * 0.25, s * 0.7, 1.8, 0, c)
+    fF(p, s * 0.28, s * 0.47, s * 0.44, 1.8, 0, c)
+    fF(p, s * 0.4, s * 0.69, s * 0.2, 1.8, 0, c)
 end
 
 D["activity"] = function(p, s, c)
@@ -537,19 +466,17 @@ D["activity"] = function(p, s, c)
         fF(p, s * pts[i] - 1, s * (1 - hs[i]), 2, s * hs[i], 1, c)
     end
 end
-D["stats"] = D["activity"]
 
 D["chip"] = function(p, s, c)
-    sO(p, s * 0.2, s * 0.2, s * 0.6, s * 0.6, 2, c, 1.6)
+    sO(p, s * 0.2, s * 0.2, s * 0.6, s * 0.6, 2, c, 1.7)
     fF(p, s * 0.36, s * 0.36, s * 0.28, s * 0.28, 1, c)
     for i = 0, 2 do
-        fF(p, s * (0.3 + i * 0.2), s * 0.1, 1.6, s * 0.1, 0, c)
-        fF(p, s * (0.3 + i * 0.2), s * 0.8, 1.6, s * 0.1, 0, c)
-        fF(p, s * 0.1, s * (0.3 + i * 0.2), s * 0.1, 1.6, 0, c)
-        fF(p, s * 0.8, s * (0.3 + i * 0.2), s * 0.1, 1.6, 0, c)
+        fF(p, s * (0.3 + i * 0.2), s * 0.1, 1.7, s * 0.1, 0, c)
+        fF(p, s * (0.3 + i * 0.2), s * 0.8, 1.7, s * 0.1, 0, c)
+        fF(p, s * 0.1, s * (0.3 + i * 0.2), s * 0.1, 1.7, 0, c)
+        fF(p, s * 0.8, s * (0.3 + i * 0.2), s * 0.1, 1.7, 0, c)
     end
 end
-D["cpu"] = D["chip"]
 
 function Icon.Create(parent, icon, size, color)
     size  = size or 18
@@ -596,7 +523,7 @@ AvenUI.IconNames = (function()
 end)()
 
 -- ═══════════════════════════════════════════════════════════
---  NOTIFICATIONS
+--  NOTIFICATIONS (Rayfield-style)
 -- ═══════════════════════════════════════════════════════════
 local notifHolder
 
@@ -611,13 +538,13 @@ local function ensureNotif()
     })
     notifHolder = mk("Frame", {
         Size = UDim2.new(0, 320, 1, -40),
-        Position = UDim2.new(1, -336, 0, 20),
+        Position = UDim2.new(1, -340, 0, 20),
         BackgroundTransparency = 1,
         Parent = sg,
     })
     mk("UIListLayout", {
         SortOrder = Enum.SortOrder.LayoutOrder,
-        Padding = UDim.new(0, 8),
+        Padding = UDim.new(0, 10),
         Parent = notifHolder,
     })
 end
@@ -632,34 +559,37 @@ function AvenUI:Notify(o)
     local ic      = o.Icon or "bell"
 
     local n = mk("Frame", {
-        Size = UDim2.new(1, 0, 0, 68),
+        Size = UDim2.new(1, 0, 0, 74),
         BackgroundColor3 = Theme.BgTop,
         BorderSizePixel = 0,
         Parent = notifHolder,
     })
-    cr(n, Theme.Radius)
+    cr(n, 10)
     local stk = st(n, Theme.Border, 1)
 
+    -- Accent left bar
     local bar = mk("Frame", {
-        Size = UDim2.new(0, 3, 0, 36),
-        Position = UDim2.new(0, 0, 0.5, -18),
+        Size = UDim2.new(0, 3, 0, 40),
+        Position = UDim2.new(0, 0, 0.5, -22),
         BackgroundColor3 = accent,
         BorderSizePixel = 0,
         Parent = n,
     })
     cr(bar, 3)
 
+    -- Icon
     local ih = mk("Frame", {
-        Size = UDim2.new(0, 24, 0, 24),
-        Position = UDim2.new(0, 16, 0.5, -18),
+        Size = UDim2.new(0, 26, 0, 26),
+        Position = UDim2.new(0, 18, 0, 16),
         BackgroundTransparency = 1,
         Parent = n,
     })
-    Icon.Create(ih, ic, 24, accent)
+    Icon.Create(ih, ic, 26, accent)
 
+    -- Title
     mk("TextLabel", {
-        Size = UDim2.new(1, -60, 0, 18),
-        Position = UDim2.new(0, 48, 0, 14),
+        Size = UDim2.new(1, -80, 0, 18),
+        Position = UDim2.new(0, 54, 0, 14),
         BackgroundTransparency = 1,
         Font = Theme.FontBold,
         Text = title,
@@ -668,9 +598,11 @@ function AvenUI:Notify(o)
         TextXAlignment = Enum.TextXAlignment.Left,
         Parent = n,
     })
+
+    -- Content
     mk("TextLabel", {
-        Size = UDim2.new(1, -60, 0, 16),
-        Position = UDim2.new(0, 48, 0, 34),
+        Size = UDim2.new(1, -80, 0, 16),
+        Position = UDim2.new(0, 54, 0, 34),
         BackgroundTransparency = 1,
         Font = Theme.Font,
         Text = content,
@@ -681,6 +613,24 @@ function AvenUI:Notify(o)
         Parent = n,
     })
 
+    -- Close button
+    local closeBtn = mk("TextButton", {
+        Size = UDim2.new(0, 20, 0, 20),
+        Position = UDim2.new(1, -30, 0, 14),
+        BackgroundColor3 = Theme.Item,
+        BorderSizePixel = 0,
+        Text = "",
+        AutoButtonColor = false,
+        Parent = n,
+    })
+    cr(closeBtn, 6)
+    local cIcon = Icon.Create(closeBtn, "close", 9, Theme.Muted)
+    cIcon.AnchorPoint = Vector2.new(0.5, 0.5)
+    cIcon.Position = UDim2.new(0.5, 0, 0.5, 0)
+    closeBtn.MouseEnter:Connect(function() tw(closeBtn, 0.15, { BackgroundColor3 = Theme.Danger }) end)
+    closeBtn.MouseLeave:Connect(function() tw(closeBtn, 0.15, { BackgroundColor3 = Theme.Item }) end)
+
+    -- Progress bar
     local progBg = mk("Frame", {
         Size = UDim2.new(1, 0, 0, 2),
         Position = UDim2.new(0, 0, 1, -2),
@@ -697,35 +647,40 @@ function AvenUI:Notify(o)
     })
     cr(progFill, 2)
 
-    n.Position = UDim2.new(1, 30, n.Position.Y.Scale, n.Position.Y.Offset)
-    tw(n, 0.32, { Position = UDim2.new(0, 0, n.Position.Y.Scale, n.Position.Y.Offset) })
+    -- Slide in
+    n.Position = UDim2.new(1, 40, n.Position.Y.Scale, n.Position.Y.Offset)
+    tw(n, 0.35, { Position = UDim2.new(0, 0, n.Position.Y.Scale, n.Position.Y.Offset) })
     tw(progFill, dur, { Size = UDim2.new(0, 0, 1, 0) }, Enum.EasingStyle.Linear)
 
-    task.delay(dur, function()
-        if n and n.Parent then
-            tw(n, 0.3, { BackgroundTransparency = 1, Position = UDim2.new(1, 30, n.Position.Y.Scale, n.Position.Y.Offset) })
-            tw(stk, 0.3, { Transparency = 1 })
-            for _, c in ipairs(n:GetDescendants()) do
-                if c:IsA("TextLabel") then tw(c, 0.3, { TextTransparency = 1 })
-                elseif c:IsA("Frame") then tw(c, 0.3, { BackgroundTransparency = 1 })
-                elseif c:IsA("UIStroke") then tw(c, 0.3, { Transparency = 1 })
-                end
+    local destroyed = false
+    local function kill()
+        if destroyed then return end
+        destroyed = true
+        tw(n, 0.28, { BackgroundTransparency = 1, Position = UDim2.new(1, 40, n.Position.Y.Scale, n.Position.Y.Offset) })
+        tw(stk, 0.28, { Transparency = 1 })
+        for _, c in ipairs(n:GetDescendants()) do
+            if c:IsA("TextLabel") then tw(c, 0.28, { TextTransparency = 1 })
+            elseif c:IsA("Frame") then tw(c, 0.28, { BackgroundTransparency = 1 })
+            elseif c:IsA("UIStroke") then tw(c, 0.28, { Transparency = 1 })
             end
-            task.wait(0.35)
-            n:Destroy()
         end
-    end)
+        task.wait(0.3)
+        n:Destroy()
+    end
+
+    closeBtn.MouseButton1Click:Connect(kill)
+    task.delay(dur, kill)
 end
 
 -- ═══════════════════════════════════════════════════════════
---  WINDOW
+--  WINDOW (Rayfield + WindUI hybrid)
 -- ═══════════════════════════════════════════════════════════
 function AvenUI:CreateWindow(o)
     o = o or {}
     local title     = o.Name or "AvenUI"
     local subtitle  = o.Subtitle or ""
-    local width     = o.Width or 560
-    local height    = o.Height or 400
+    local width     = o.Width or 580
+    local height    = o.Height or 420
     local ic        = o.Icon
     local toggleKey = o.ToggleKey or Enum.KeyCode.RightControl
 
@@ -744,31 +699,43 @@ function AvenUI:CreateWindow(o)
     })
     self.ScreenGui = sg
 
-    local main = mk("Frame", {
-        Name = "Main",
+    -- Multi-layer shadow wrapper
+    local shadowWrap = mk("Frame", {
+        Name = "ShadowWrap",
         Size = UDim2.new(0, width, 0, height),
         Position = UDim2.new(0.5, -width / 2, 0.5, -height / 2),
+        BackgroundTransparency = 1,
+        Parent = sg,
+    })
+
+    -- Shadow layers
+    for i = 1, 3 do
+        local s = mk("Frame", {
+            Size = UDim2.new(1, i * 6, 1, i * 6),
+            Position = UDim2.new(0.5, -i * 3, 0.5, -i * 3),
+            BackgroundColor3 = Color3.new(0, 0, 0),
+            BackgroundTransparency = 0.85 - (i * 0.03),
+            BorderSizePixel = 0,
+            ZIndex = -i,
+            Parent = shadowWrap,
+        })
+        cr(s, Theme.RadiusLg + i * 3)
+    end
+
+    local main = mk("Frame", {
+        Name = "Main",
+        Size = UDim2.new(1, 0, 1, 0),
         BackgroundColor3 = Theme.Bg,
         BorderSizePixel = 0,
         Active = true,
-        Parent = sg,
+        Parent = shadowWrap,
     })
     cr(main, Theme.RadiusLg)
     st(main, Theme.Border, 1)
     self.Main = main
+    self.Wrapper = shadowWrap
 
-    mk("ImageLabel", {
-        AnchorPoint = Vector2.new(0.5, 0.5),
-        Position = UDim2.new(0.5, 0, 0.5, 6),
-        Size = UDim2.new(1, 50, 1, 50),
-        BackgroundTransparency = 1,
-        Image = "rbxassetid://6014261993",
-        ImageColor3 = Color3.new(0, 0, 0),
-        ImageTransparency = 0.5,
-        ZIndex = -1,
-        Parent = main,
-    })
-
+    -- ── Topbar ────────────────────────────────────────────
     local top = mk("Frame", {
         Name = "Topbar",
         Size = UDim2.new(1, 0, 0, Theme.HeaderH),
@@ -787,37 +754,47 @@ function AvenUI:CreateWindow(o)
     mk("Frame", {
         Size = UDim2.new(1, 0, 0, 1),
         Position = UDim2.new(0, 0, 1, -1),
-        BackgroundColor3 = Theme.Border,
+        BackgroundColor3 = Theme.BorderSoft,
         BorderSizePixel = 0,
         Parent = top,
     })
 
+    -- Icon with accent glow
     if ic then
+        local glow = mk("Frame", {
+            Size = UDim2.new(0, 40, 0, 40),
+            Position = UDim2.new(0, 18, 0.5, -20),
+            BackgroundColor3 = Theme.Accent,
+            BackgroundTransparency = 0.88,
+            BorderSizePixel = 0,
+            Parent = top,
+        })
+        cr(glow, 11)
         local iconWrap = mk("Frame", {
             Size = UDim2.new(0, 32, 0, 32),
             Position = UDim2.new(0, 22, 0.5, -16),
             BackgroundColor3 = Theme.Accent,
-            BackgroundTransparency = 0.85,
+            BackgroundTransparency = 0.82,
             BorderSizePixel = 0,
             Parent = top,
         })
         cr(iconWrap, 9)
-        local iStroke = st(iconWrap, Theme.Accent, 1)
-        iStroke.Transparency = 0.6
+        local iStk = st(iconWrap, Theme.Accent, 1)
+        iStk.Transparency = 0.5
         local icon = Icon.Create(iconWrap, ic, 18, Theme.Accent)
         icon.AnchorPoint = Vector2.new(0.5, 0.5)
         icon.Position = UDim2.new(0.5, 0, 0.5, 0)
     end
 
-    local titleX = ic and 66 or 22
+    local titleX = ic and 70 or 22
     local titleLbl = mk("TextLabel", {
-        Size = UDim2.new(1, -180, 0, 26),
-        Position = UDim2.new(0, titleX, 0, 15),
+        Size = UDim2.new(1, -200, 0, 22),
+        Position = UDim2.new(0, titleX, 0, 14),
         BackgroundTransparency = 1,
         Font = Theme.FontBlack,
         Text = title,
         TextColor3 = Theme.Text,
-        TextSize = 18,
+        TextSize = 16,
         TextXAlignment = Enum.TextXAlignment.Left,
         Parent = top,
     })
@@ -825,21 +802,22 @@ function AvenUI:CreateWindow(o)
     local subLbl
     if subtitle ~= "" then
         subLbl = mk("TextLabel", {
-            Size = UDim2.new(1, -180, 0, 16),
-            Position = UDim2.new(0, titleX, 0, 42),
+            Size = UDim2.new(1, -200, 0, 14),
+            Position = UDim2.new(0, titleX, 0, 36),
             BackgroundTransparency = 1,
             Font = Theme.FontMed,
             Text = subtitle,
             TextColor3 = Theme.Accent,
-            TextSize = 11,
+            TextSize = 10.5,
             TextXAlignment = Enum.TextXAlignment.Left,
             Parent = top,
         })
     end
 
+    -- Clock
     local clock = mk("TextLabel", {
-        Size = UDim2.new(0, 60, 0, 16),
-        Position = UDim2.new(1, -150, 0.5, 10),
+        Size = UDim2.new(0, 60, 0, 14),
+        Position = UDim2.new(1, -150, 0.5, 8),
         BackgroundTransparency = 1,
         Font = Theme.FontMed,
         Text = "00:00",
@@ -855,9 +833,10 @@ function AvenUI:CreateWindow(o)
         end
     end)
 
+    -- Minimize button
     local minBtn = mk("TextButton", {
         Size = UDim2.new(0, 30, 0, 30),
-        Position = UDim2.new(1, -76, 0.5, -15),
+        Position = UDim2.new(1, -74, 0.5, -15),
         BackgroundColor3 = Theme.Item,
         BorderSizePixel = 0,
         Text = "",
@@ -869,6 +848,7 @@ function AvenUI:CreateWindow(o)
     local mi = Icon.Create(minHolder, "minus", 13, Theme.SubText)
     mi.AnchorPoint = Vector2.new(0.5, 0.5); mi.Position = UDim2.new(0.5, 0, 0.5, 0)
 
+    -- Close button
     local closeBtn = mk("TextButton", {
         Size = UDim2.new(0, 30, 0, 30),
         Position = UDim2.new(1, -40, 0.5, -15),
@@ -898,6 +878,7 @@ function AvenUI:CreateWindow(o)
     minBtn.MouseEnter:Connect(function() tw(minBtn, 0.15, { BackgroundColor3 = Theme.ItemHover }) end)
     minBtn.MouseLeave:Connect(function() tw(minBtn, 0.15, { BackgroundColor3 = Theme.Item }) end)
 
+    -- ── Sidebar ───────────────────────────────────────────
     local side = mk("Frame", {
         Name = "Sidebar",
         Size = UDim2.new(0, Theme.SidebarW, 1, -Theme.HeaderH - 8),
@@ -909,20 +890,21 @@ function AvenUI:CreateWindow(o)
     cr(side, Theme.Radius)
     st(side, Theme.BorderSoft, 1)
 
+    -- Search
     local searchWrap = mk("Frame", {
-        Size = UDim2.new(1, -16, 0, 32),
+        Size = UDim2.new(1, -16, 0, 34),
         Position = UDim2.new(0, 8, 0, 8),
         BackgroundColor3 = Theme.Input,
         BorderSizePixel = 0,
         Parent = side,
     })
     cr(searchWrap, Theme.RadiusSm)
-    st(searchWrap, Theme.BorderSoft, 1)
+    local searchStroke = st(searchWrap, Theme.BorderSoft, 1)
     local si = Icon.Create(searchWrap, "search", 13, Theme.Muted)
-    si.Position = UDim2.new(0, 10, 0.5, -6.5)
+    si.Position = UDim2.new(0, 11, 0.5, -6.5)
     local searchBox = mk("TextBox", {
-        Size = UDim2.new(1, -34, 1, 0),
-        Position = UDim2.new(0, 30, 0, 0),
+        Size = UDim2.new(1, -36, 1, 0),
+        Position = UDim2.new(0, 32, 0, 0),
         BackgroundTransparency = 1,
         Font = Theme.Font,
         Text = "",
@@ -934,10 +916,13 @@ function AvenUI:CreateWindow(o)
         ClearTextOnFocus = false,
         Parent = searchWrap,
     })
+    searchBox.Focused:Connect(function() tw(searchStroke, 0.2, { Color = Theme.BorderFocus }) end)
+    searchBox.FocusLost:Connect(function() tw(searchStroke, 0.2, { Color = Theme.BorderSoft }) end)
 
+    -- Tab holder
     local tabHolder = mk("ScrollingFrame", {
-        Size = UDim2.new(1, 0, 1, -50),
-        Position = UDim2.new(0, 0, 0, 46),
+        Size = UDim2.new(1, 0, 1, -52),
+        Position = UDim2.new(0, 0, 0, 50),
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         ScrollBarThickness = 0,
@@ -952,6 +937,7 @@ function AvenUI:CreateWindow(o)
     })
     pd(tabHolder, 0, 8, 12, 8)
 
+    -- Content
     local content = mk("Frame", {
         Name = "Content",
         Size = UDim2.new(1, -Theme.SidebarW - 24, 1, -Theme.HeaderH - 8),
@@ -963,8 +949,9 @@ function AvenUI:CreateWindow(o)
     self.Content = content
     self.TabHolder = tabHolder
 
-    drag(main, top)
+    drag(shadowWrap, top)
 
+    -- Minimize handler
     minBtn.MouseButton1Click:Connect(function()
         self.Minimized = not self.Minimized
         local target
@@ -983,7 +970,7 @@ function AvenUI:CreateWindow(o)
             local e = Icon.Create(minHolder, "minus", 13, Theme.SubText)
             e.AnchorPoint = Vector2.new(0.5, 0.5); e.Position = UDim2.new(0.5, 0, 0.5, 0)
         end
-        tw(main, 0.3, { Size = target }, Enum.EasingStyle.Quint)
+        tw(shadowWrap, 0.32, { Size = target }, Enum.EasingStyle.Quint)
     end)
 
     closeBtn.MouseButton1Click:Connect(function() sg:Destroy() end)
@@ -1004,13 +991,15 @@ function AvenUI:CreateWindow(o)
         end
     end)
 
-    -- ─── Tab ────────────────────────────────────────────────
+    -- ═══════════════════════════════════════════════════════
+    --  TAB
+    -- ═══════════════════════════════════════════════════════
     function self:CreateTab(name, ic)
         local tab = {}
         tab.Name = name
 
         local btn = mk("TextButton", {
-            Size = UDim2.new(1, 0, 0, 36),
+            Size = UDim2.new(1, 0, 0, 38),
             BackgroundColor3 = Theme.Item,
             BackgroundTransparency = 1,
             BorderSizePixel = 0,
@@ -1020,35 +1009,34 @@ function AvenUI:CreateWindow(o)
             Parent = tabHolder,
         })
         cr(btn, Theme.RadiusSm)
-        local bStroke = st(btn, Theme.Border, 1)
-        bStroke.Transparency = 1
 
-        local accent = mk("Frame", {
-            Size = UDim2.new(0, 3, 0, 18),
-            Position = UDim2.new(0, 0, 0.5, -9),
+        -- Left accent bar (Rayfield style)
+        local accentBar = mk("Frame", {
+            Size = UDim2.new(0, 3, 0, 20),
+            Position = UDim2.new(0, 0, 0.5, -10),
             BackgroundColor3 = Theme.Accent,
             BorderSizePixel = 0,
             Parent = btn,
         })
-        cr(accent, 3)
-        accent.BackgroundTransparency = 1
+        cr(accentBar, 3)
+        accentBar.BackgroundTransparency = 1
 
         local iHolder = mk("Frame", {
-            Size = UDim2.new(0, 16, 0, 16),
-            Position = UDim2.new(0, 14, 0.5, -8),
+            Size = UDim2.new(0, 18, 0, 18),
+            Position = UDim2.new(0, 15, 0.5, -9),
             BackgroundTransparency = 1,
             Parent = btn,
         })
-        Icon.Create(iHolder, ic or "star", 16, Theme.SubText)
+        Icon.Create(iHolder, ic or "star", 18, Theme.SubText)
 
         local label = mk("TextLabel", {
-            Size = UDim2.new(1, -48, 1, 0),
-            Position = UDim2.new(0, 38, 0, 0),
+            Size = UDim2.new(1, -50, 1, 0),
+            Position = UDim2.new(0, 42, 0, 0),
             BackgroundTransparency = 1,
             Font = Theme.FontMed,
             Text = name,
             TextColor3 = Theme.SubText,
-            TextSize = 12,
+            TextSize = 12.5,
             TextXAlignment = Enum.TextXAlignment.Left,
             Parent = btn,
         })
@@ -1069,33 +1057,29 @@ function AvenUI:CreateWindow(o)
             Padding = UDim.new(0, 6),
             Parent = container,
         })
-        pd(container, 4, 4, 24, 4)
+        pd(container, 4, 6, 24, 4)
 
         tab.Button = btn
         tab.Container = container
         tab.Label = label
-        tab.Stroke = bStroke
-        tab.Accent = accent
+        tab.AccentBar = accentBar
         tab.IconHolder = iHolder
         tab.IconName = ic or "star"
 
         local function select()
             for _, t in ipairs(self.Tabs) do
-                t.Button.BackgroundTransparency = 1
-                t.Stroke.Transparency = 1
-                t.Accent.BackgroundTransparency = 1
+                tw(t.Button, 0.18, { BackgroundTransparency = 1 })
+                tw(t.AccentBar, 0.18, { BackgroundTransparency = 1 })
+                tw(t.Label, 0.18, { TextColor3 = Theme.SubText })
                 t.Container.Visible = false
-                tw(t.Label, 0.15, { TextColor3 = Theme.SubText })
                 for _, c in ipairs(t.IconHolder:GetChildren()) do c:Destroy() end
-                Icon.Create(t.IconHolder, t.IconName, 16, Theme.SubText)
+                Icon.Create(t.IconHolder, t.IconName, 18, Theme.SubText)
             end
-            tw(btn, 0.15, { BackgroundTransparency = 0.88, BackgroundColor3 = Theme.Accent })
-            bStroke.Transparency = 0
-            bStroke.Color = Theme.Accent
-            accent.BackgroundTransparency = 0
-            tw(label, 0.15, { TextColor3 = Theme.Accent })
+            tw(btn, 0.18, { BackgroundTransparency = 0.9, BackgroundColor3 = Theme.Accent })
+            tw(accentBar, 0.18, { BackgroundTransparency = 0 })
+            tw(label, 0.18, { TextColor3 = Theme.Accent })
             for _, c in ipairs(iHolder:GetChildren()) do c:Destroy() end
-            Icon.Create(iHolder, ic or "star", 16, Theme.Accent)
+            Icon.Create(iHolder, ic or "star", 18, Theme.Accent)
             container.Visible = true
             self.ActiveTab = tab
         end
@@ -1104,46 +1088,55 @@ function AvenUI:CreateWindow(o)
         table.insert(self.Tabs, tab)
         if #self.Tabs == 1 then task.defer(select) end
 
-        -- Section
+        -- ── Section ───────────────────────────────────────
         function tab:Section(txt, ic)
             local wrap = mk("Frame", {
-                Size = UDim2.new(1, -8, 0, 26),
+                Size = UDim2.new(1, -8, 0, 24),
                 BackgroundTransparency = 1,
                 Parent = container,
             })
-            local x = 12
-            if ic then
-                local h = mk("Frame", {
-                    Size = UDim2.new(0, 14, 0, 14),
-                    Position = UDim2.new(0, 2, 0.5, -7),
-                    BackgroundTransparency = 1,
-                    Parent = wrap,
-                })
-                Icon.Create(h, ic, 14, Theme.Accent)
-                x = 22
-            else
-                mk("Frame", {
-                    Size = UDim2.new(0, 3, 0, 14),
-                    Position = UDim2.new(0, 2, 0.5, -7),
-                    BackgroundColor3 = Theme.Accent,
-                    BorderSizePixel = 0,
-                    Parent = wrap,
-                })
-            end
-            mk("TextLabel", {
-                Size = UDim2.new(1, -x, 1, 0),
-                Position = UDim2.new(0, x, 0, 0),
+            local lineL = mk("Frame", {
+                Size = UDim2.new(0, 8, 0, 1),
+                Position = UDim2.new(0, 0, 0.5, 0),
+                BackgroundColor3 = Theme.Border,
+                BorderSizePixel = 0,
+                Parent = wrap,
+            })
+            local label = mk("TextLabel", {
+                Size = UDim2.new(0, 0, 1, 0),
+                Position = UDim2.new(0, 14, 0, 0),
                 BackgroundTransparency = 1,
                 Font = Theme.FontBold,
                 Text = txt:upper(),
                 TextColor3 = Theme.Muted,
-                TextSize = 10.5,
+                TextSize = 10,
                 TextXAlignment = Enum.TextXAlignment.Left,
+                AutomaticSize = Enum.AutomaticSize.X,
                 Parent = wrap,
             })
+            local lineR = mk("Frame", {
+                Size = UDim2.new(1, -200, 0, 1),
+                Position = UDim2.new(0, 0, 0.5, 0),
+                BackgroundColor3 = Theme.Border,
+                BorderSizePixel = 0,
+                Parent = wrap,
+            })
+            -- Position line after label
+            lineR.Position = UDim2.new(0, 0, 0.5, 0)
+            label:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+                local w = label.AbsoluteSize.X
+                lineL.Size = UDim2.new(0, 0, 0, 1)
+                lineR.Position = UDim2.new(0, 22 + w, 0.5, 0)
+                lineR.Size = UDim2.new(1, -(22 + w) - 8, 0, 1)
+            end)
+            task.defer(function()
+                local w = label.AbsoluteSize.X
+                lineR.Position = UDim2.new(0, 22 + w, 0.5, 0)
+                lineR.Size = UDim2.new(1, -(22 + w) - 8, 0, 1)
+            end)
         end
 
-        -- Toggle
+        -- ── Toggle ────────────────────────────────────────
         function tab:Toggle(o)
             o = o or {}
             local state = o.CurrentValue or false
@@ -1151,43 +1144,44 @@ function AvenUI:CreateWindow(o)
             if flag then self.Flags[flag] = { type = "toggle", value = state } end
 
             local row = mk("TextButton", {
-                Size = UDim2.new(1, -8, 0, 40),
+                Size = UDim2.new(1, -8, 0, 42),
                 BackgroundColor3 = Theme.Item,
                 BorderSizePixel = 0,
                 Text = "",
                 AutoButtonColor = false,
                 Parent = container,
             })
-            cr(row, Theme.RadiusSm)
-            local stk = st(row, Theme.BorderSoft, 1)
+            cr(row, Theme.Radius)
+            local rowStroke = st(row, Theme.BorderSoft, 1)
 
             local tx = 14
             if o.Icon then
                 local h = mk("Frame", {
                     Size = UDim2.new(0, 16, 0, 16),
-                    Position = UDim2.new(0, 13, 0.5, -8),
+                    Position = UDim2.new(0, 14, 0.5, -8),
                     BackgroundTransparency = 1,
                     Parent = row,
                 })
                 Icon.Create(h, o.Icon, 16, Theme.SubText)
-                tx = 38
+                tx = 40
             end
 
             mk("TextLabel", {
-                Size = UDim2.new(1, -tx - 56, 1, 0),
+                Size = UDim2.new(1, -tx - 62, 1, 0),
                 Position = UDim2.new(0, tx, 0, 0),
                 BackgroundTransparency = 1,
                 Font = Theme.FontMed,
                 Text = o.Name or "Toggle",
                 TextColor3 = Theme.Text,
-                TextSize = 12,
+                TextSize = 12.5,
                 TextXAlignment = Enum.TextXAlignment.Left,
                 Parent = row,
             })
 
+            -- Toggle switch
             local sw = mk("Frame", {
-                Size = UDim2.new(0, 34, 0, 18),
-                Position = UDim2.new(1, -46, 0.5, -9),
+                Size = UDim2.new(0, 40, 0, 22),
+                Position = UDim2.new(1, -54, 0.5, -11),
                 BackgroundColor3 = Theme.Track,
                 BorderSizePixel = 0,
                 Parent = row,
@@ -1195,8 +1189,8 @@ function AvenUI:CreateWindow(o)
             cr(sw, 100)
 
             local knob = mk("Frame", {
-                Size = UDim2.new(0, 14, 0, 14),
-                Position = UDim2.new(0, 2, 0.5, -7),
+                Size = UDim2.new(0, 16, 0, 16),
+                Position = UDim2.new(0, 3, 0.5, -8),
                 BackgroundColor3 = Theme.SubText,
                 BorderSizePixel = 0,
                 Parent = sw,
@@ -1205,21 +1199,27 @@ function AvenUI:CreateWindow(o)
 
             local function render()
                 if state then
-                    tw(knob, 0.22, { Position = UDim2.new(1, -16, 0.5, -7), BackgroundColor3 = Color3.new(1, 1, 1) }, Enum.EasingStyle.Back)
-                    tw(sw, 0.2, { BackgroundColor3 = Theme.Accent })
-                    tw(stk, 0.15, { Color = Theme.Accent, Transparency = 0.6 })
+                    tw(knob, 0.3, {
+                        Position = UDim2.new(1, -19, 0.5, -8),
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                    }, Enum.EasingStyle.Back)
+                    tw(sw, 0.24, { BackgroundColor3 = Theme.Accent })
+                    tw(rowStroke, 0.2, { Color = Theme.Accent, Transparency = 0.5 })
                 else
-                    tw(knob, 0.22, { Position = UDim2.new(0, 2, 0.5, -7), BackgroundColor3 = Theme.SubText }, Enum.EasingStyle.Back)
-                    tw(sw, 0.2, { BackgroundColor3 = Theme.Track })
-                    tw(stk, 0.15, { Color = Theme.BorderSoft, Transparency = 0 })
+                    tw(knob, 0.3, {
+                        Position = UDim2.new(0, 3, 0.5, -8),
+                        BackgroundColor3 = Theme.SubText,
+                    }, Enum.EasingStyle.Back)
+                    tw(sw, 0.24, { BackgroundColor3 = Theme.Track })
+                    tw(rowStroke, 0.2, { Color = Theme.BorderSoft, Transparency = 0 })
                 end
             end
 
             row.MouseEnter:Connect(function()
-                if not state then tw(row, 0.15, { BackgroundColor3 = Theme.ItemHover }) end
+                if not state then tw(row, 0.2, { BackgroundColor3 = Theme.ItemHover }) end
             end)
             row.MouseLeave:Connect(function()
-                if not state then tw(row, 0.15, { BackgroundColor3 = Theme.Item }) end
+                if not state then tw(row, 0.2, { BackgroundColor3 = Theme.Item }) end
             end)
             row.MouseButton1Click:Connect(function()
                 state = not state
@@ -1235,7 +1235,7 @@ function AvenUI:CreateWindow(o)
             }
         end
 
-        -- Slider
+        -- ── Slider ────────────────────────────────────────
         function tab:Slider(o)
             o = o or {}
             local mn = (o.Range and o.Range[1]) or 0
@@ -1246,41 +1246,42 @@ function AvenUI:CreateWindow(o)
             local flag = o.Flag
 
             local row = mk("Frame", {
-                Size = UDim2.new(1, -8, 0, 54),
+                Size = UDim2.new(1, -8, 0, 58),
                 BackgroundColor3 = Theme.Item,
                 BorderSizePixel = 0,
                 Parent = container,
             })
-            cr(row, Theme.RadiusSm)
+            cr(row, Theme.Radius)
             st(row, Theme.BorderSoft, 1)
 
             local tx = 14
             if o.Icon then
                 local h = mk("Frame", {
                     Size = UDim2.new(0, 16, 0, 16),
-                    Position = UDim2.new(0, 13, 0, 12),
+                    Position = UDim2.new(0, 14, 0, 13),
                     BackgroundTransparency = 1,
                     Parent = row,
                 })
                 Icon.Create(h, o.Icon, 16, Theme.SubText)
-                tx = 38
+                tx = 40
             end
 
             mk("TextLabel", {
-                Size = UDim2.new(1, -tx - 90, 0, 18),
-                Position = UDim2.new(0, tx, 0, 9),
+                Size = UDim2.new(1, -tx - 100, 0, 18),
+                Position = UDim2.new(0, tx, 0, 10),
                 BackgroundTransparency = 1,
                 Font = Theme.FontMed,
                 Text = o.Name or "Slider",
                 TextColor3 = Theme.Text,
-                TextSize = 12,
+                TextSize = 12.5,
                 TextXAlignment = Enum.TextXAlignment.Left,
                 Parent = row,
             })
 
+            -- Value bubble
             local valBubble = mk("Frame", {
-                Size = UDim2.new(0, 62, 0, 22),
-                Position = UDim2.new(1, -76, 0, 8),
+                Size = UDim2.new(0, 66, 0, 22),
+                Position = UDim2.new(1, -80, 0, 9),
                 BackgroundColor3 = Theme.Accent,
                 BorderSizePixel = 0,
                 Parent = row,
@@ -1291,14 +1292,15 @@ function AvenUI:CreateWindow(o)
                 BackgroundTransparency = 1,
                 Font = Theme.FontBold,
                 Text = tostring(val) .. sfx,
-                TextColor3 = Color3.fromRGB(10, 11, 13),
+                TextColor3 = Theme.AccentText,
                 TextSize = 11,
                 Parent = valBubble,
             })
 
+            -- Track
             local track = mk("Frame", {
                 Size = UDim2.new(1, -28, 0, 6),
-                Position = UDim2.new(0, 14, 0, 36),
+                Position = UDim2.new(0, 14, 0, 40),
                 BackgroundColor3 = Theme.Track,
                 BorderSizePixel = 0,
                 Parent = row,
@@ -1314,29 +1316,39 @@ function AvenUI:CreateWindow(o)
             cr(fill, 100)
 
             local knob = mk("Frame", {
-                Size = UDim2.new(0, 14, 0, 14),
-                Position = UDim2.new((val - mn) / (mx - mn), -7, 0.5, -7),
+                Size = UDim2.new(0, 16, 0, 16),
+                Position = UDim2.new((val - mn) / (mx - mn), -8, 0.5, -8),
                 BackgroundColor3 = Color3.new(1, 1, 1),
                 BorderSizePixel = 0,
                 Parent = track,
             })
             cr(knob, 100)
-            mk("UIStroke", { Color = Theme.Accent, Thickness = 2, Parent = knob })
+            local knobStroke = mk("UIStroke", { Color = Theme.Accent, Thickness = 2, Parent = knob })
+            local knobGlow = mk("ImageLabel", {
+                Size = UDim2.new(1, 16, 1, 16),
+                Position = UDim2.new(0, -8, 0, -8),
+                BackgroundTransparency = 1,
+                Image = "rbxassetid://5028857472",
+                ImageColor3 = Theme.Accent,
+                ImageTransparency = 0.5,
+                ZIndex = -1,
+                Parent = knob,
+            })
 
             local dragging = false
             track.InputBegan:Connect(function(i)
                 if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
                     dragging = true
-                    tw(knob, 0.15, { Size = UDim2.new(0, 18, 0, 18) }, Enum.EasingStyle.Back)
-                    knob.Position = UDim2.new(knob.Position.X.Scale, -9, 0.5, -9)
+                    tw(knob, 0.2, { Size = UDim2.new(0, 20, 0, 20) }, Enum.EasingStyle.Back)
+                    knob.Position = UDim2.new(knob.Position.X.Scale, -10, 0.5, -10)
                 end
             end)
             UserInput.InputEnded:Connect(function(i)
                 if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
                     if dragging then
                         dragging = false
-                        tw(knob, 0.15, { Size = UDim2.new(0, 14, 0, 14) }, Enum.EasingStyle.Back)
-                        knob.Position = UDim2.new(knob.Position.X.Scale, -7, 0.5, -7)
+                        tw(knob, 0.2, { Size = UDim2.new(0, 16, 0, 16) }, Enum.EasingStyle.Back)
+                        knob.Position = UDim2.new(knob.Position.X.Scale, -8, 0.5, -8)
                     end
                 end
             end)
@@ -1349,7 +1361,7 @@ function AvenUI:CreateWindow(o)
                 if nv == val then return end
                 val = nv
                 fill.Size = UDim2.new(rel, 0, 1, 0)
-                knob.Position = UDim2.new(rel, -9, 0.5, -9)
+                knob.Position = UDim2.new(rel, -10, 0.5, -10)
                 valLbl.Text = tostring(val) .. sfx
                 if flag then self.Flags[flag].value = val end
                 task.spawn(o.Callback or function() end, val)
@@ -1360,7 +1372,7 @@ function AvenUI:CreateWindow(o)
                     val = math.clamp(v, mn, mx)
                     local rel = (val - mn) / (mx - mn)
                     fill.Size = UDim2.new(rel, 0, 1, 0)
-                    knob.Position = UDim2.new(rel, -7, 0.5, -7)
+                    knob.Position = UDim2.new(rel, -8, 0.5, -8)
                     valLbl.Text = tostring(val) .. sfx
                     if flag then self.Flags[flag].value = val end
                     task.spawn(o.Callback or function() end, val)
@@ -1369,33 +1381,33 @@ function AvenUI:CreateWindow(o)
             }
         end
 
-        -- Button
+        -- ── Button ────────────────────────────────────────
         function tab:Button(o)
             o = o or {}
             local danger = o.Danger or false
             local bg = danger and Theme.Danger or Theme.Accent
-            local txtCol = danger and Color3.new(1, 1, 1) or Color3.fromRGB(10, 11, 13)
+            local txtCol = danger and Color3.new(1, 1, 1) or Theme.AccentText
 
             local row = mk("TextButton", {
-                Size = UDim2.new(1, -8, 0, 38),
+                Size = UDim2.new(1, -8, 0, 40),
                 BackgroundColor3 = bg,
                 BorderSizePixel = 0,
                 Text = "",
                 AutoButtonColor = false,
                 Parent = container,
             })
-            cr(row, Theme.RadiusSm)
+            cr(row, Theme.Radius)
 
             local tx = 0
             if o.Icon then
                 local h = mk("Frame", {
                     Size = UDim2.new(0, 16, 0, 16),
-                    Position = UDim2.new(0, 14, 0.5, -8),
+                    Position = UDim2.new(0, 16, 0.5, -8),
                     BackgroundTransparency = 1,
                     Parent = row,
                 })
                 Icon.Create(h, o.Icon, 16, txtCol)
-                tx = 40
+                tx = 42
             end
 
             mk("TextLabel", {
@@ -1405,43 +1417,49 @@ function AvenUI:CreateWindow(o)
                 Font = Theme.FontBold,
                 Text = o.Name or "Button",
                 TextColor3 = txtCol,
-                TextSize = 12,
+                TextSize = 12.5,
                 Parent = row,
             })
 
             row.MouseEnter:Connect(function()
-                tw(row, 0.15, { BackgroundColor3 = danger and Color3.fromRGB(220, 38, 38) or Theme.AccentDim })
+                tw(row, 0.18, { BackgroundColor3 = danger and Color3.fromRGB(220, 38, 38) or Theme.AccentDim })
             end)
             row.MouseLeave:Connect(function()
-                tw(row, 0.15, { BackgroundColor3 = bg })
+                tw(row, 0.18, { BackgroundColor3 = bg })
+            end)
+            row.MouseButton1Down:Connect(function()
+                tw(row, 0.1, { Size = UDim2.new(1, -8, 0, 38) })
+            end)
+            row.MouseButton1Up:Connect(function()
+                tw(row, 0.1, { Size = UDim2.new(1, -8, 0, 40) })
             end)
             row.MouseButton1Click:Connect(function()
                 task.spawn(o.Callback or function() end)
             end)
         end
 
-        -- Input
+        -- ── Input ─────────────────────────────────────────
         function tab:Input(o)
             o = o or {}
             local row = mk("Frame", {
-                Size = UDim2.new(1, -8, 0, 56),
+                Size = UDim2.new(1, -8, 0, 58),
                 BackgroundColor3 = Theme.Item,
                 BorderSizePixel = 0,
                 Parent = container,
             })
-            cr(row, Theme.RadiusSm)
+            cr(row, Theme.Radius)
             st(row, Theme.BorderSoft, 1)
 
             local tx = 14
             if o.Icon then
                 local h = mk("Frame", {
                     Size = UDim2.new(0, 16, 0, 16),
-                    Position = UDim2.new(0, 13, 0, 11),
+                    Position = UDim2.new(0, 14, 0, 12),
                     BackgroundTransparency = 1,
                     Parent = row,
                 })
                 Icon.Create(h, o.Icon, 16, Theme.SubText)
-                tx = 38
+                tx = 40
             end
 
             mk("TextLabel", {
@@ -1451,35 +1469,42 @@ function AvenUI:CreateWindow(o)
                 Font = Theme.FontMed,
                 Text = o.Name or "Input",
                 TextColor3 = Theme.Text,
-                TextSize = 12,
+                TextSize = 12.5,
                 TextXAlignment = Enum.TextXAlignment.Left,
                 Parent = row,
             })
 
-            local box = mk("TextBox", {
-                Size = UDim2.new(1, -24, 0, 24),
+            local boxWrap = mk("Frame", {
+                Size = UDim2.new(1, -24, 0, 26),
                 Position = UDim2.new(0, 12, 0, 28),
                 BackgroundColor3 = Theme.Input,
                 BorderSizePixel = 0,
+                Parent = row,
+            })
+            cr(boxWrap, 6)
+            local bStroke = st(boxWrap, Theme.BorderSoft, 1)
+
+            local box = mk("TextBox", {
+                Size = UDim2.new(1, -20, 1, 0),
+                Position = UDim2.new(0, 10, 0, 0),
+                BackgroundTransparency = 1,
                 Font = Theme.Font,
                 Text = o.CurrentValue or "",
                 PlaceholderText = o.Placeholder or "Type here...",
                 TextColor3 = Theme.Text,
                 PlaceholderColor3 = Theme.Muted,
-                TextSize = 11,
+                TextSize = 11.5,
                 TextXAlignment = Enum.TextXAlignment.Left,
                 ClearTextOnFocus = false,
-                Parent = row,
+                Parent = boxWrap,
             })
-            cr(box, 6)
-            st(box, Theme.BorderSoft, 1)
-            pd(box, 0, 10, 0, 10)
 
             box.FocusLost:Connect(function()
+                tw(bStroke, 0.2, { Color = Theme.BorderSoft })
                 task.spawn(o.Callback or function() end, box.Text)
             end)
             box.Focused:Connect(function()
-                tw(box, 0.15, { BackgroundColor3 = Theme.BgTop })
+                tw(bStroke, 0.2, { Color = Theme.BorderFocus })
             end)
 
             return {
@@ -1488,73 +1513,73 @@ function AvenUI:CreateWindow(o)
             }
         end
 
-        -- Dropdown
+        -- ── Dropdown ──────────────────────────────────────
         function tab:Dropdown(o)
             o = o or {}
             local opts = o.Options or {}
             local cur = o.CurrentOption or (opts[1] or "")
 
             local wrap = mk("Frame", {
-                Size = UDim2.new(1, -8, 0, 40),
+                Size = UDim2.new(1, -8, 0, 42),
                 BackgroundTransparency = 1,
                 AutomaticSize = Enum.AutomaticSize.Y,
                 Parent = container,
             })
 
             local row = mk("TextButton", {
-                Size = UDim2.new(1, 0, 0, 40),
+                Size = UDim2.new(1, 0, 0, 42),
                 BackgroundColor3 = Theme.Item,
                 BorderSizePixel = 0,
                 Text = "",
                 AutoButtonColor = false,
                 Parent = wrap,
             })
-            cr(row, Theme.RadiusSm)
+            cr(row, Theme.Radius)
             st(row, Theme.BorderSoft, 1)
 
             local tx = 14
             if o.Icon then
                 local h = mk("Frame", {
                     Size = UDim2.new(0, 16, 0, 16),
-                    Position = UDim2.new(0, 13, 0.5, -8),
+                    Position = UDim2.new(0, 14, 0.5, -8),
                     BackgroundTransparency = 1,
                     Parent = row,
                 })
                 Icon.Create(h, o.Icon, 16, Theme.SubText)
-                tx = 38
+                tx = 40
             end
 
             mk("TextLabel", {
-                Size = UDim2.new(1, -tx - 100, 1, 0),
+                Size = UDim2.new(1, -tx - 110, 1, 0),
                 Position = UDim2.new(0, tx, 0, 0),
                 BackgroundTransparency = 1,
                 Font = Theme.FontMed,
                 Text = o.Name or "Dropdown",
                 TextColor3 = Theme.Text,
-                TextSize = 12,
+                TextSize = 12.5,
                 TextXAlignment = Enum.TextXAlignment.Left,
                 Parent = row,
             })
 
             local valLbl = mk("TextLabel", {
-                Size = UDim2.new(0, 84, 1, 0),
-                Position = UDim2.new(1, -102, 0, 0),
+                Size = UDim2.new(0, 90, 1, 0),
+                Position = UDim2.new(1, -116, 0, 0),
                 BackgroundTransparency = 1,
                 Font = Theme.FontBold,
                 Text = tostring(cur),
                 TextColor3 = Theme.Accent,
-                TextSize = 11,
+                TextSize = 11.5,
                 TextXAlignment = Enum.TextXAlignment.Right,
                 Parent = row,
             })
 
             local chev = mk("Frame", {
-                Size = UDim2.new(0, 10, 0, 10),
-                Position = UDim2.new(1, -22, 0.5, -5),
+                Size = UDim2.new(0, 12, 0, 12),
+                Position = UDim2.new(1, -26, 0.5, -6),
                 BackgroundTransparency = 1,
                 Parent = row,
             })
-            local chevIcon = Icon.Create(chev, "chevron-down", 10, Theme.SubText)
+            local ci = Icon.Create(chev, "chevron-down", 12, Theme.SubText)
 
             local list = mk("Frame", {
                 Size = UDim2.new(1, 0, 0, 0),
@@ -1564,34 +1589,34 @@ function AvenUI:CreateWindow(o)
                 Visible = false,
                 Parent = wrap,
             })
-            cr(list, Theme.RadiusSm)
+            cr(list, Theme.Radius)
             st(list, Theme.BorderSoft, 1)
             mk("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 2), Parent = list })
             pd(list, 4)
 
             for _, opt in ipairs(opts) do
                 local ob = mk("TextButton", {
-                    Size = UDim2.new(1, -8, 0, 28),
+                    Size = UDim2.new(1, -8, 0, 30),
                     BackgroundColor3 = Theme.Item,
                     BorderSizePixel = 0,
                     Font = Theme.Font,
                     Text = tostring(opt),
                     TextColor3 = Theme.Text,
-                    TextSize = 11,
+                    TextSize = 11.5,
                     AutoButtonColor = false,
                     Parent = list,
                 })
                 cr(ob, 6)
-                ob.MouseEnter:Connect(function() tw(ob, 0.1, { BackgroundColor3 = Theme.ItemHover }) end)
-                ob.MouseLeave:Connect(function() tw(ob, 0.1, { BackgroundColor3 = Theme.Item }) end)
+                ob.MouseEnter:Connect(function() tw(ob, 0.12, { BackgroundColor3 = Theme.ItemHover }) end)
+                ob.MouseLeave:Connect(function() tw(ob, 0.12, { BackgroundColor3 = Theme.Item }) end)
                 ob.MouseButton1Click:Connect(function()
                     cur = opt
                     valLbl.Text = tostring(opt)
                     list.Visible = false
                     list.Size = UDim2.new(1, 0, 0, 0)
                     for _, c in ipairs(chev:GetChildren()) do c:Destroy() end
-                    local ci2 = Icon.Create(chev, "chevron-down", 10, Theme.SubText)
-                    ci2.AnchorPoint = Vector2.new(0.5, 0.5); ci2.Position = UDim2.new(0.5, 0, 0.5, 0)
+                    local d = Icon.Create(chev, "chevron-down", 12, Theme.SubText)
+                    d.AnchorPoint = Vector2.new(0.5, 0.5); d.Position = UDim2.new(0.5, 0, 0.5, 0)
                     task.spawn(o.Callback or function() end, opt)
                 end)
             end
@@ -1600,11 +1625,11 @@ function AvenUI:CreateWindow(o)
             row.MouseButton1Click:Connect(function()
                 exp = not exp
                 list.Visible = exp
-                local th = (#opts * 30) + 8
-                tw(list, 0.22, { Size = UDim2.new(1, 0, 0, exp and th or 0) })
+                local th = (#opts * 32) + 8
+                tw(list, 0.24, { Size = UDim2.new(1, 0, 0, exp and th or 0) })
                 for _, c in ipairs(chev:GetChildren()) do c:Destroy() end
-                local ci2 = Icon.Create(chev, exp and "chevron-up" or "chevron-down", 10, Theme.SubText)
-                ci2.AnchorPoint = Vector2.new(0.5, 0.5); ci2.Position = UDim2.new(0.5, 0, 0.5, 0)
+                local d = Icon.Create(chev, exp and "chevron-up" or "chevron-down", 12, Theme.SubText)
+                d.AnchorPoint = Vector2.new(0.5, 0.5); d.Position = UDim2.new(0.5, 0, 0.5, 0)
             end)
 
             return {
@@ -1613,56 +1638,56 @@ function AvenUI:CreateWindow(o)
             }
         end
 
-        -- Keybind
+        -- ── Keybind ───────────────────────────────────────
         function tab:Keybind(o)
             o = o or {}
             local cur = o.CurrentKeybind or Enum.KeyCode.E
             local listening = false
 
             local row = mk("TextButton", {
-                Size = UDim2.new(1, -8, 0, 40),
+                Size = UDim2.new(1, -8, 0, 42),
                 BackgroundColor3 = Theme.Item,
                 BorderSizePixel = 0,
                 Text = "",
                 AutoButtonColor = false,
                 Parent = container,
             })
-            cr(row, Theme.RadiusSm)
+            cr(row, Theme.Radius)
             st(row, Theme.BorderSoft, 1)
 
             local tx = 14
             if o.Icon then
                 local h = mk("Frame", {
                     Size = UDim2.new(0, 16, 0, 16),
-                    Position = UDim2.new(0, 13, 0.5, -8),
+                    Position = UDim2.new(0, 14, 0.5, -8),
                     BackgroundTransparency = 1,
                     Parent = row,
                 })
                 Icon.Create(h, o.Icon, 16, Theme.SubText)
-                tx = 38
+                tx = 40
             end
 
             mk("TextLabel", {
-                Size = UDim2.new(1, -tx - 90, 1, 0),
+                Size = UDim2.new(1, -tx - 100, 1, 0),
                 Position = UDim2.new(0, tx, 0, 0),
                 BackgroundTransparency = 1,
                 Font = Theme.FontMed,
                 Text = o.Name or "Keybind",
                 TextColor3 = Theme.Text,
-                TextSize = 12,
+                TextSize = 12.5,
                 TextXAlignment = Enum.TextXAlignment.Left,
                 Parent = row,
             })
 
             local keyBox = mk("Frame", {
-                Size = UDim2.new(0, 72, 0, 24),
-                Position = UDim2.new(1, -84, 0.5, -12),
+                Size = UDim2.new(0, 76, 0, 26),
+                Position = UDim2.new(1, -88, 0.5, -13),
                 BackgroundColor3 = Theme.Input,
                 BorderSizePixel = 0,
                 Parent = row,
             })
             cr(keyBox, 6)
-            st(keyBox, Theme.BorderSoft, 1)
+            local kStroke = st(keyBox, Theme.BorderSoft, 1)
 
             local keyLbl = mk("TextLabel", {
                 Size = UDim2.new(1, 0, 1, 0),
@@ -1678,7 +1703,7 @@ function AvenUI:CreateWindow(o)
                 listening = true
                 keyLbl.Text = "press..."
                 keyLbl.TextColor3 = Theme.SubText
-                tw(keyBox, 0.15, { BackgroundColor3 = Theme.BgTop })
+                tw(kStroke, 0.2, { Color = Theme.BorderFocus })
             end)
 
             UserInput.InputBegan:Connect(function(i, p)
@@ -1689,6 +1714,7 @@ function AvenUI:CreateWindow(o)
                     keyLbl.Text = cur.Name
                     keyLbl.TextColor3 = Theme.Accent
                     listening = false
+                    tw(kStroke, 0.2, { Color = Theme.BorderSoft })
                     task.spawn(o.Callback or function() end, cur)
                 end
             end)
@@ -1696,7 +1722,7 @@ function AvenUI:CreateWindow(o)
             return { Get = function() return cur end }
         end
 
-        -- Label
+        -- ── Label ─────────────────────────────────────────
         function tab:Label(o)
             o = o or {}
             local wrap = mk("Frame", {
@@ -1711,7 +1737,7 @@ function AvenUI:CreateWindow(o)
                 Font = Theme.Font,
                 Text = o.Text or "",
                 TextColor3 = Theme.SubText,
-                TextSize = 11,
+                TextSize = 11.5,
                 TextWrapped = true,
                 TextXAlignment = Enum.TextXAlignment.Left,
                 AutomaticSize = Enum.AutomaticSize.Y,
@@ -1720,7 +1746,7 @@ function AvenUI:CreateWindow(o)
             pd(lbl, 4, 4, 4, 4)
         end
 
-        -- Divider
+        -- ── Divider ───────────────────────────────────────
         function tab:Divider(txt)
             if txt then
                 local wrap = mk("Frame", {
