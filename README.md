@@ -1,963 +1,419 @@
-Nah, kalau maunya lebih bagus dan lebih “niat”, kita bisa bikin README-nya seperti dokumentasi library Roblox yang benar-benar profesional — bukan sekadar daftar API.
+<div align="center">
 
-Aku sarankan strukturnya seperti ini:
+<h1>AvenUI</h1>
+<p><strong>A premium, dependency-free Roblox UI library — icons drawn from zero.</strong><br>
+<em>Library UI Roblox premium tanpa dependensi — ikon digambar dari nol.</em></p>
 
-Hero/header AvenUI
+![Version](https://img.shields.io/badge/version-1.0.0-5865F2?style=flat-square)
+![License](https://img.shields.io/badge/license-MIT-22c55e?style=flat-square)
+![Icons](https://img.shields.io/badge/icons-60%2B-f59e0b?style=flat-square)
+![Zero Dependencies](https://img.shields.io/badge/dependencies-none-ef4444?style=flat-square)
 
-Badges
+<br>
 
-Short description
+[Why](#why-avenui) · [Features](#features) · [Installation](#installation) · [Quick Start](#quick-start) · [Elements](#elements) · [Icons](#icons) · [Theme](#theme) · [API](#api-reference)
 
-Navigation / Table of Contents
-
-Showcase / Preview
-
-Why AvenUI?
-
-Highlights
-
-Features lengkap
-
-Design philosophy
-
-Installation
-
-Quick Start
-
-Full Example
-
-Window configuration
-
-Tabs
-
-Semua Elements
-
-Icon system
-
-Daftar 80+ icon
-
-Theme system
-
-Theme presets
-
-Notifications
-
-API Reference
-
-Methods & properties
-
-Mobile support
-
-Keyboard controls
-
-Performance
-
-Compatibility
-
-FAQ
-
-Troubleshooting
-
-Contributing
-
-Roadmap
-
-License
-
-Credits
-
-
-Dan semua Markdown-nya dibuat benar, jadi saat dipaste ke GitHub tidak berubah menjadi teks/kode berantakan.
-
-Contoh bagian awalnya bisa dibuat jauh lebih keren seperti ini:
-
+</div>
 
 ---
 
-AvenUI
+## Why AvenUI?
 
-A premium, dependency-free Roblox UI library built for clean, modern, and customizable interfaces.
+Most UI libraries lean on Roblox's asset marketplace, unicode characters, or bloated third-party icon packs — slow loads, broken icons after moderation, hidden network calls.
 
-AvenUI focuses on a simple idea:
+> *Sebagian besar library UI bergantung pada marketplace aset Roblox, karakter unicode, atau pak ikon pihak ketiga yang besar — loading lambat, ikon rusak setelah moderasi, panggilan network tersembunyi.*
 
-> Clean UI. Zero dependencies. Hand-drawn icons. Full control.
+AvenUI does none of that. Every icon is drawn pixel-by-pixel using `Frame` primitives and `UIStroke`. Every color comes from a runtime-swappable theme. Every element stays under 40 lines — readable, hackable, yours.
 
-
-
-    
-
+> *AvenUI tidak seperti itu. Setiap ikon digambar pixel-by-pixel menggunakan primitif `Frame` dan `UIStroke`. Setiap warna berasal dari tema yang bisa diganti saat runtime. Setiap elemen di bawah 40 baris — mudah dibaca, mudah dimodifikasi, milikmu.*
 
 ---
 
-Navigation
+## Features
 
-About
-
-Features
-
-Why AvenUI?
-
-Installation
-
-Quick Start
-
-Full Example
-
-Windows
-
-Tabs
-
-Elements
-
-Icons
-
-Themes
-
-Notifications
-
-API Reference
-
-Mobile Support
-
-Compatibility
-
-FAQ
-
-Troubleshooting
-
-Roadmap
-
-Contributing
-
-License
-
-
+| Feature | English | Indonesia |
+|---|---|---|
+| **Icons** | 60+ hand-drawn vector icons | 60+ ikon vektor yang digambar manual |
+| **Size** | Single file, zero dependencies | Satu file, tanpa dependensi |
+| **Theme** | Runtime-swappable color system | Sistem warna yang bisa diganti saat runtime |
+| **Mobile** | Fully touch-compatible | Sepenuhnya kompatibel sentuhan |
+| **Network** | Zero HTTP calls | Tanpa network call sama sekali |
+| **Performance** | Smooth 60+ FPS animations | Animasi mulus 60+ FPS |
+| **Window** | Draggable & minimizable | Bisa digeser & di-minimize |
+| **Search** | Built-in sidebar filter | Filter pencarian di sidebar |
+| **Elements** | 11 element types | 11 tipe elemen |
 
 ---
 
-About
+## Installation
 
-AvenUI is a lightweight Roblox UI library designed for developers who want a polished interface without relying on large third-party frameworks.
+**Option 1 — One-liner (recommended) / Opsi 1 — Satu baris (direkomendasikan):**
 
-Unlike many UI libraries, AvenUI is designed around:
+```lua
+local AvenUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/YourUser/AvenUI/main/AvenUI.lua"))()
+```
 
-No external icon packs
-
-No Unicode-based icons
-
-No emoji
-
-No library dependencies
-
-No built-in HTTP requests
-
-Runtime theme customization
-
-PC and mobile support
-
-Simple and readable APIs
-
-
-The result is a UI system that is easy to integrate, customize, and extend.
-
+**Option 2 — Local / Opsi 2 — Lokal:**
+Download `AvenUI.lua` and drop it into your project.
+*Unduh `AvenUI.lua` lalu masukkan ke dalam project kamu.*
 
 ---
 
-Why AvenUI?
+## Quick Start
 
-Lightweight
+The shortest working example. / *Contoh terpendek yang langsung jalan.*
 
-AvenUI is distributed as a single Lua file with no required dependencies.
-
-Custom Icons
-
-The library includes 60+ hand-drawn vector-style icons built specifically for AvenUI.
-
-No external icon package is required.
-
-Runtime Themes
-
-Change colors and visual properties while the interface is running.
-
-AvenUI:SetTheme({
-    Accent = Color3.fromRGB(88, 101, 242),
-    Bg = Color3.fromRGB(15, 15, 20),
-})
-
-Mobile Ready
-
-Controls are designed with touch interaction in mind, making AvenUI suitable for both desktop and mobile Roblox clients.
-
-Developer Friendly
-
-AvenUI's API is intentionally simple:
-
-Tab:Toggle({...})
-Tab:Slider({...})
-Tab:Button({...})
-Tab:Dropdown({...})
-Tab:Input({...})
-Tab:Keybind({...})
-
-
----
-
-Features
-
-Category	Included
-
-UI	Modern dark interface
-Window	Draggable, minimizable
-Sidebar	Search and filtering
-Tabs	Multiple configurable tabs
-Icons	60+ custom icons
-Themes	Runtime theme switching
-Notifications	Animated toast notifications
-Input	Text input and keybinds
-Controls	Toggle, slider, dropdown, button
-Mobile	Touch-friendly
-Dependencies	None
-Network	No built-in HTTP requests
-Distribution	Single Lua file
-
-
-
----
-
-Installation
-
-Loadstring
-
-local AvenUI = loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/YourUser/AvenUI/main/AvenUI.lua"
-))()
-
-Local Installation
-
-Download AvenUI.lua and place it directly into your project.
-
-Then require/load it from your own environment.
-
-
----
-
-Quick Start
-
-Creating your first AvenUI window only takes a few lines:
-
-local AvenUI = loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/YourUser/AvenUI/main/AvenUI.lua"
-))()
+```lua
+local AvenUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/YourUser/AvenUI/main/AvenUI.lua"))()
 
 local Window = AvenUI:CreateWindow({
-    Name = "My Hub",
+    Name     = "My Hub",
     Subtitle = "by YourName",
-    Icon = "sparkle",
+    Icon     = "sparkle",
 })
 
-local Main = Window:CreateTab("Main", "home")
+local Tab = Window:CreateTab("Main", "home")
 
-Main:Toggle({
-    Name = "Enable",
-    Icon = "power",
-
-    Callback = function(state)
-        print("Enabled:", state)
-    end,
+Tab:Toggle({
+    Name     = "Enable",
+    Icon     = "power",
+    Callback = function(state) print(state) end,
 })
+```
 
-Default Controls
-
-Action	Control
-
-Move window	Drag top bar
-Minimize	- button
-Toggle UI	RightControl
-
-
+> Run it — a window appears center-screen. Drag by the topbar, minimize with **`−`**, toggle visibility with **Right Ctrl**.
+> *Jalankan — window muncul di tengah layar. Geser dengan menahan topbar, minimize dengan tombol **`−`**, sembunyikan dengan **Ctrl Kanan**.*
 
 ---
 
-Full Example
+## Full Example
 
-local AvenUI = loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/YourUser/AvenUI/main/AvenUI.lua"
-))()
+Complete showcase with every element type. / *Contoh lengkap dengan semua tipe elemen.*
+
+```lua
+local AvenUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/YourUser/AvenUI/main/AvenUI.lua"))()
 
 local Window = AvenUI:CreateWindow({
-    Name = "Aven Hub",
-    Subtitle = "by Gixss",
-    Icon = "sparkle",
-
-    Width = 560,
-    Height = 420,
-
+    Name      = "Aven Hub",
+    Subtitle  = "by Gixss",
+    Icon      = "sparkle",
+    Width     = 560,
+    Height    = 420,
     ToggleKey = Enum.KeyCode.RightControl,
 })
 
--- Main Tab
-local Main = Window:CreateTab("Main", "home")
+-- Tab 1: Main
+local MainTab = Window:CreateTab("Main", "home")
 
-Main:Section("Character", "user")
+MainTab:Section("Character", "user")
 
-Main:Slider({
-    Name = "Walk Speed",
-    Icon = "power",
-
-    Range = {16, 200},
-    Increment = 1,
-    Suffix = " studs",
-
+MainTab:Slider({
+    Name         = "Walk Speed",
+    Icon         = "power",
+    Range        = { 16, 200 },
+    Increment    = 1,
+    Suffix       = " studs",
     CurrentValue = 16,
-
-    Callback = function(value)
-        print("Walk Speed:", value)
-    end,
+    Callback     = function(v) print("Speed:", v) end,
 })
 
-Main:Slider({
-    Name = "Jump Power",
-    Icon = "bolt",
-
-    Range = {50, 200},
-    Increment = 5,
-    Suffix = " jp",
-
+MainTab:Slider({
+    Name         = "Jump Power",
+    Icon         = "bolt",
+    Range        = { 50, 200 },
+    Increment    = 5,
+    Suffix       = " jp",
     CurrentValue = 50,
 })
 
-Main:Toggle({
-    Name = "Infinite Jump",
-    Icon = "arrow-up",
+MainTab:Toggle({
+    Name         = "Infinite Jump",
+    Icon         = "arrow-up",
+    CurrentValue = false,
+    Callback     = function(state) print("Inf Jump:", state) end,
+})
+
+MainTab:Toggle({
+    Name         = "No Clip",
+    Icon         = "shield",
     CurrentValue = false,
 })
 
-Main:Toggle({
-    Name = "No Clip",
-    Icon = "shield",
-    CurrentValue = false,
-})
+-- Tab 2: Visual
+local VisualTab = Window:CreateTab("Visual", "eye")
 
--- Visual Tab
-local Visual = Window:CreateTab("Visual", "eye")
+VisualTab:Section("Rendering", "sparkle")
 
-Visual:Section("Rendering", "sparkle")
-
-Visual:Dropdown({
-    Name = "Quality",
-    Icon = "grid",
-
-    Options = {
-        "Low",
-        "Medium",
-        "High",
-        "Ultra",
-    },
-
+VisualTab:Dropdown({
+    Name          = "Quality",
+    Icon          = "grid",
+    Options       = { "Low", "Medium", "High", "Ultra" },
     CurrentOption = "Medium",
-
-    Callback = function(option)
-        print("Quality:", option)
-    end,
+    Callback      = function(opt) print("Quality:", opt) end,
 })
 
-Visual:Button({
-    Name = "Apply Settings",
-    Icon = "check",
-
+VisualTab:Button({
+    Name     = "Apply Settings",
+    Icon     = "check",
     Callback = function()
         AvenUI:Notify({
-            Title = "Applied",
-            Content = "Settings saved successfully",
-            Icon = "check",
-            Accent = Color3.fromRGB(34, 197, 94),
+            Title    = "Applied",
+            Content  = "Settings saved successfully",
+            Icon     = "check",
+            Accent   = Color3.fromRGB(34, 197, 94),
             Duration = 3,
         })
     end,
 })
 
+-- Tab 3: Misc
+local MiscTab = Window:CreateTab("Misc", "settings")
 
----
+MiscTab:Section("Input", "key")
 
-Elements
-
-AvenUI provides a collection of lightweight UI elements.
-
-Toggle
-
-local Toggle = Tab:Toggle({
-    Name = "Enable Feature",
-    Icon = "power",
-
-    CurrentValue = false,
-
-    Callback = function(state)
-        print(state)
-    end,
+MiscTab:Input({
+    Name        = "Webhook URL",
+    Icon        = "link",
+    Placeholder = "https://discord.com/api/webhooks/...",
+    Callback    = function(text) print("Webhook:", text) end,
 })
 
-Returns:
-
-Toggle:Set(true)
-Toggle:Get()
-
-
----
-
-Slider
-
-local Slider = Tab:Slider({
-    Name = "Walk Speed",
-    Icon = "power",
-
-    Range = {16, 200},
-    Increment = 1,
-    CurrentValue = 16,
-    Suffix = " studs",
-
-    Callback = function(value)
-        print(value)
-    end,
+MiscTab:Keybind({
+    Name           = "Panic Key",
+    Icon           = "key",
+    CurrentKeybind = Enum.KeyCode.P,
+    Callback       = function(key) print("Panic:", key.Name) end,
 })
 
+MiscTab:Divider("danger zone")
 
----
-
-Button
-
-Tab:Button({
-    Name = "Execute",
-    Icon = "play",
-
+MiscTab:Button({
+    Name     = "Reset All",
+    Icon     = "trash",
+    Danger   = true,
     Callback = function()
-        print("Executed")
+        AvenUI:Notify({
+            Title    = "Reset",
+            Content  = "All settings cleared",
+            Icon     = "warning",
+            Accent   = Color3.fromRGB(239, 68, 68),
+            Duration = 3,
+        })
     end,
 })
-
+```
 
 ---
 
-Dropdown
+## Elements
 
-local Dropdown = Tab:Dropdown({
-    Name = "Quality",
-    Icon = "grid",
-
-    Options = {
-        "Low",
-        "Medium",
-        "High",
-        "Ultra",
-    },
-
-    CurrentOption = "High",
-
-    Callback = function(option)
-        print(option)
-    end,
-})
-
+| Element | Method | Returns |
+|---|---|---|
+| Section | `Tab:Section(text, icon?)` | — |
+| Toggle | `Tab:Toggle(opts)` | `{ Set, Get }` |
+| Slider | `Tab:Slider(opts)` | `{ Set, Get }` |
+| Button | `Tab:Button(opts)` | — |
+| Input | `Tab:Input(opts)` | `{ Set, Get }` |
+| Dropdown | `Tab:Dropdown(opts)` | `{ Set, Get }` |
+| Keybind | `Tab:Keybind(opts)` | `{ Get }` |
+| Label | `Tab:Label(opts)` | — |
+| Divider | `Tab:Divider(text?)` | — |
+| Notification | `AvenUI:Notify(opts)` | — |
 
 ---
 
-Input
+## Icons
 
-local Input = Tab:Input({
-    Name = "Username",
-    Icon = "user",
+AvenUI ships with 60+ hand-drawn vector icons. Every icon is built from `Frame` primitives — no unicode, no emoji, no external assets.
 
-    Placeholder = "Enter username...",
+*AvenUI hadir dengan 60+ ikon vektor yang digambar manual. Setiap ikon dibuat dari primitif `Frame` — tanpa unicode, tanpa emoji, tanpa aset eksternal.*
 
-    Callback = function(text)
-        print(text)
-    end,
-})
+Three ways to pass an icon: / *Tiga cara memasukkan ikon:*
 
+```lua
+Tab:Toggle({ Name = "Named",     Icon = "gear" })
+Tab:Toggle({ Name = "Asset ID",  Icon = 1234567890 })
+Tab:Toggle({ Name = "Asset URL", Icon = "rbxassetid://1234567890" })
+```
 
----
+### Available Icon Names
 
-Keybind
+```
+activity     aim          alert        arrow-down   arrow-left
+arrow-right  arrow-up     bell         bolt         cart
+check        chevron-down chevron-left chevron-right chevron-up
+chip         close        code         cog          combat
+copy         cpu          crosshair    crown        delete
+dev          diamond      discord      document     download
+edit         exit         eye          favorite     file
+filter       find         fire         flame        folder
+gear         gem          globe        grid         heart
+home         house        info         key          like
+lightning    link         list         location     lock
+map          menu         minus        moon         notif
+pause        pencil       pin          play         plus
+power        profile      protect      refresh      reload
+remove       script       search       secure       settings
+shield       shop         sparkle      star         stop
+sun          sword        sync         tag          target
+terminal     tick         trash        upload       user
+view         vip          volume       warning      wifi
+x            zap
+```
 
-local Keybind = Tab:Keybind({
-    Name = "Toggle Menu",
-    Icon = "key",
+Get the full list at runtime: / *Ambil daftar lengkap saat runtime:*
 
-    CurrentKeybind = Enum.KeyCode.RightControl,
-
-    Callback = function(key)
-        print(key.Name)
-    end,
-})
-
-
----
-
-Icons
-
-AvenUI includes a large collection of built-in icons.
-
-Tab:Button({
-    Name = "Settings",
-    Icon = "settings",
-})
-
-Icon Sources
-
-AvenUI supports:
-
-Named icons
-
-Icon = "settings"
-
-Asset IDs
-
-Icon = 1234567890
-
-Roblox asset URLs
-
-Icon = "rbxassetid://1234567890"
-
-Built-in Icons
-
-activity
-aim
-alert
-arrow-down
-arrow-left
-arrow-right
-arrow-up
-bell
-bolt
-cart
-check
-chevron-down
-chevron-left
-chevron-right
-chevron-up
-chip
-close
-code
-cog
-combat
-copy
-cpu
-crosshair
-crown
-delete
-dev
-diamond
-discord
-document
-download
-edit
-exit
-eye
-favorite
-file
-filter
-find
-fire
-flame
-folder
-gear
-gem
-globe
-grid
-heart
-home
-house
-info
-key
-like
-lightning
-link
-list
-location
-lock
-map
-menu
-minus
-moon
-notif
-pause
-pencil
-pin
-play
-plus
-power
-profile
-protect
-refresh
-reload
-remove
-script
-search
-secure
-settings
-shield
-shop
-sparkle
-star
-stop
-sun
-sword
-sync
-tag
-target
-terminal
-tick
-trash
-upload
-user
-view
-vip
-volume
-warning
-wifi
-x
-zap
-
-Get the icon list at runtime:
-
+```lua
 print(AvenUI.IconNames)
-
-
----
-
-Themes
-
-AvenUI uses a centralized theme system.
-
-Set Theme
-
-AvenUI:SetTheme({
-    Bg = Color3.fromRGB(15, 15, 20),
-    Accent = Color3.fromRGB(88, 101, 242),
-})
-
-Change Accent
-
-AvenUI:SetAccent(
-    Color3.fromRGB(239, 68, 68)
-)
-
-Read Theme
-
-local Theme = AvenUI:GetTheme()
-
-print(Theme.Bg)
-print(Theme.Accent)
-
-Theme Properties
-
-Property	Description
-
-Bg	Main background
-BgTop	Top bar background
-BgSide	Sidebar background
-Item	Element background
-ItemHover	Hover background
-Input	Input background
-Track	Slider/toggle track
-Border	Primary border
-BorderSoft	Secondary border
-Text	Primary text
-SubText	Secondary text
-Muted	Muted text
-Accent	Main accent
-AccentDim	Dimmed accent
-Danger	Destructive actions
-Warn	Warning state
-Info	Information state
-Success	Success state
-Radius	Default radius
-RadiusSm	Small radius
-RadiusLg	Large radius
-HeaderH	Header height
-SidebarW	Sidebar width
-
-
+```
 
 ---
 
-Notifications
+## Theme
 
-Display lightweight notification toasts with:
+**Override Theme / Ganti Tema:**
 
-AvenUI:Notify({
-    Title = "Success",
-    Content = "Settings saved successfully.",
-    Icon = "check",
-
-    Accent = Color3.fromRGB(34, 197, 94),
-    Duration = 3,
-})
-
-Supported notification states can be represented using the theme's:
-
-Success
-
-Danger
-
-Warn
-
-Info
-
-
-
----
-
-API Reference
-
-Window
-
-Method	Description
-
-AvenUI:CreateWindow(opts)	Create a window
-Window:CreateTab(name, icon)	Create a tab
-Window:SetTitle(text)	Change title
-Window:SetSubtitle(text)	Change subtitle
-Window:Destroy()	Destroy UI
-
-
-Global
-
-Method	Description
-
-AvenUI:Notify(opts)	Show notification
-AvenUI:SetTheme(table)	Update theme
-AvenUI:SetAccent(color)	Change accent
-AvenUI:GetTheme()	Get active theme
-
-
-
----
-
-Mobile Support
-
-AvenUI is designed to work across different screen sizes.
-
-The interface focuses on:
-
-Touch-friendly controls
-
-Comfortable button sizes
-
-Responsive interaction
-
-Draggable windows
-
-Mobile-friendly sidebar navigation
-
-
-PC keyboard controls remain available where supported.
-
-
----
-
-Compatibility
-
-AvenUI has been tested with several Roblox environments.
-
-Environment	Status
-
-Delta	Supported
-Wave	Supported
-Xeno	Supported
-Fluxus	Supported
-Arceus X	Supported
-Hydrogen	Supported
-Codex	Supported
-Krnl	Supported
-Synapse	Supported
-Vega X	Supported
-
-
-> Compatibility may change as Roblox and third-party environments receive updates.
-
-
-
-
----
-
-Performance
-
-AvenUI is designed to remain lightweight by avoiding unnecessary dependencies and external resources.
-
-Performance principles
-
-Minimal dependencies
-
-No external icon packages
-
-No built-in HTTP requests
-
-Lightweight GUI primitives
-
-Reusable theme system
-
-Simple element architecture
-
-
-Actual performance depends on the device, Roblox client, executor, and complexity of the interface being created.
-
-
----
-
-FAQ
-
-Does AvenUI require external assets?
-
-No. Built-in icons are included as part of the library.
-
-Does AvenUI require dependencies?
-
-No. AvenUI is distributed as a single Lua file.
-
-Does AvenUI make HTTP requests?
-
-The library itself does not make network requests.
-
-The loadstring example fetches the library source from GitHub; this is separate from the library's runtime behavior.
-
-Does it work on mobile?
-
-Yes. AvenUI is designed with touch interaction in mind.
-
-Can I customize the colors?
-
-Yes. Use SetTheme() or SetAccent().
-
-Can I create multiple tabs?
-
-Yes.
-
-local Main = Window:CreateTab("Main", "home")
-local Visual = Window:CreateTab("Visual", "eye")
-local Settings = Window:CreateTab("Settings", "settings")
-
-
----
-
-Troubleshooting
-
-UI does not appear
-
-Check that:
-
-1. The AvenUI source is loading correctly.
-
-
-2. Your environment supports the required Roblox APIs.
-
-
-3. The script does not stop due to another error.
-
-
-4. You are using a current version of AvenUI.
-
-
-
-An icon does not appear
-
-Make sure the icon name exists:
-
-print(AvenUI.IconNames)
-
-Theme changes are not visible
-
-Make sure the property name matches one of the supported theme properties.
-
-For example:
-
+```lua
 AvenUI:SetTheme({
     Accent = Color3.fromRGB(88, 101, 242),
+    Bg     = Color3.fromRGB(15, 15, 20),
 })
+```
 
+**Set Accent Only / Ganti Accent Saja:**
 
----
+```lua
+AvenUI:SetAccent(Color3.fromRGB(239, 68, 68))
+```
 
-Roadmap
+**Read Current Theme / Baca Tema Saat Ini:**
 
-Planned improvements may include:
+```lua
+local theme = AvenUI:GetTheme()
+print(theme.Accent)
+```
 
-[ ] More built-in icons
+### Theme Properties / Properti Tema
 
-[ ] Additional UI elements
-
-[ ] More theme presets
-
-[ ] Improved mobile layouts
-
-[ ] More animation options
-
-[ ] Extended API documentation
-
-[ ] Additional customization options
-
-[ ] Improved accessibility
-
-[ ] More examples
-
-
-> The roadmap may change as AvenUI evolves.
-
-
-
-
----
-
-Contributing
-
-Contributions are welcome.
-
-Before submitting a pull request
-
-1. Check existing issues and pull requests.
-
-
-2. Keep changes focused.
-
-
-3. Follow the existing coding style.
-
-
-4. Test your changes.
-
-
-5. Explain what changed and why.
-
-
-
-For major changes, open an issue first so the approach can be discussed.
-
+| Key | English | Indonesia |
+|---|---|---|
+| `Bg` | Main window background | Background window utama |
+| `BgTop` | Topbar background | Background top bar |
+| `BgSide` | Sidebar background | Background sidebar |
+| `Item` | Default element background | Background elemen default |
+| `ItemHover` | Hover state | Warna saat hover |
+| `Input` | TextBox background | Background TextBox |
+| `Track` | Slider and toggle track | Track slider dan toggle |
+| `Border` | Primary stroke color | Warna stroke utama |
+| `BorderSoft` | Secondary stroke color | Warna stroke sekunder |
+| `Text` | Primary text | Teks utama |
+| `SubText` | Secondary text | Teks sekunder |
+| `Muted` | Muted text | Teks redup |
+| `Accent` | Brand accent | Warna aksen brand |
+| `AccentDim` | Dimmed accent | Aksen diredupkan |
+| `Danger` | Destructive action | Untuk aksi berbahaya |
+| `Warn` | Warning state | Untuk peringatan |
+| `Info` | Info state | Untuk informasi |
+| `Success` | Success state | Untuk keberhasilan |
+| `Radius` | Default corner radius | Radius sudut default |
+| `RadiusSm` | Small radius | Radius kecil |
+| `RadiusLg` | Large radius | Radius besar |
+| `HeaderH` | Topbar height | Tinggi top bar |
+| `SidebarW` | Sidebar width | Lebar sidebar |
 
 ---
 
-License
+## API Reference
 
-AvenUI is licensed under the MIT License.
+### `AvenUI:CreateWindow(opts)`
 
-See LICENSE for the complete license text.
+Creates the main window. Returns a `Window` object.
+*Membuat window utama. Mengembalikan objek `Window`.*
 
+### `Window:CreateTab(name, icon)`
+
+Creates a tab inside the window. Returns a `Tab` object.
+*Membuat tab di dalam window. Mengembalikan objek `Tab`.*
+
+### `Window:SetTitle(text)`
+
+Updates the window title at runtime.
+*Mengubah judul window saat runtime.*
+
+### `Window:SetSubtitle(text)`
+
+Updates the window subtitle at runtime.
+*Mengubah subtitle window saat runtime.*
+
+### `Window:Destroy()`
+
+Destroys the entire UI.
+*Menghapus seluruh UI.*
+
+### `AvenUI:Notify(opts)`
+
+Shows a notification toast.
+*Menampilkan notifikasi toast.*
+
+| Option | Type | Description |
+|---|---|---|
+| `Title` | string | Notification title |
+| `Content` | string | Body text |
+| `Icon` | string | Icon name |
+| `Accent` | Color3 | Accent color |
+| `Duration` | number | Seconds before auto-dismiss |
+
+### `AvenUI:SetTheme(table)`
+
+Merges a table into the active theme.
+*Menggabungkan tabel ke dalam tema aktif.*
+
+### `AvenUI:SetAccent(color)`
+
+Sets the primary accent color and recalculates derived colors.
+*Mengatur warna aksen utama dan menghitung ulang warna turunannya.*
+
+### `AvenUI:GetTheme()`
+
+Returns the current theme table.
+*Mengembalikan tabel tema saat ini.*
 
 ---
 
-Credits
+## Compatibility
 
-AvenUI
+| Executor | Status |
+|---|---|
+| Delta | ✅ |
+| Wave | ✅ |
+| Xeno | ✅ |
+| Fluxus | ✅ |
+| Arceus X | ✅ |
+| Hydrogen | ✅ |
+| Codex | ✅ |
+| Krnl | ✅ |
+| Synapse | ✅ |
+| Vega X | ✅ |
 
-Made by Gixss
-
-If AvenUI is useful to you, consider giving the repository a star.
-
-Community:
-https://discord.gg/q7PZBsbpD
-
+Works on PC and mobile. Fully touch-compatible.
+*Berjalan di PC dan mobile. Sepenuhnya kompatibel dengan sentuhan.*
 
 ---
 
-<p align="center">
-  <b>AvenUI</b><br>
-  Clean UI. Simple API. Full control.
-</p>
+## Contributing
+
+Pull requests are welcome. For major changes, open an issue first so we can discuss what you'd like to change.
+
+*Pull request sangat diterima. Untuk perubahan besar, buka issue terlebih dahulu agar kita bisa diskusi dulu.*
+
+---
+
+## License
+
+MIT — see [LICENSE](LICENSE).
+
+---
+
+<div align="center">
+Made by Gixss · <a href="#">Discord</a>
+</div>
