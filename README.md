@@ -1,39 +1,87 @@
 ```markdown
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=84cc16&height=220&section=header&text=AvenUI&fontSize=90&fontAlignY=35&desc=Premium%20Roblox%20UI%20Library&descAlignY=55&descSize=18&fontColor=ffffff" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:84cc16,100:4d7c0f&height=260&section=header&text=AvenUI&fontSize=120&fontColor=ffffff&fontAlignY=38&desc=Premium%20Roblox%20UI%20Library&descAlignY=62&descSize=20&animation=fadeIn" width="100%"/>
 
-### A premium, dependency-free Roblox UI library with hand-drawn vector icons.
-### Library UI Roblox premium tanpa dependensi, dengan ikon vektor yang digambar dari nol.
+<br/>
+
+**A premium, dependency-free Roblox UI library with hand-drawn vector icons.**
+
+**Library UI Roblox premium tanpa dependensi, dengan ikon vektor yang digambar dari nol.**
+
+<br/>
 
 **No emoji · No unicode · No external assets · Just clean UI**
+
 **Tanpa emoji · Tanpa unicode · Tanpa aset eksternal · Hanya UI bersih**
 
 <br/>
 
-[![Version](https://img.shields.io/badge/version-1.0.0-84cc16?style=for-the-badge&labelColor=0a0b0d)](https://github.com/YourUser/AvenUI/releases)
-[![License](https://img.shields.io/badge/license-MIT-84cc16?style=for-the-badge&labelColor=0a0b0d)](LICENSE)
-[![Lua](https://img.shields.io/badge/lua-5.1-2C2D72?style=for-the-badge&labelColor=0a0b0d&logo=lua&logoColor=white)](https://www.lua.org)
-[![Roblox](https://img.shields.io/badge/roblox-compatible-84cc16?style=for-the-badge&labelColor=0a0b0d)](https://www.roblox.com)
-[![Stars](https://img.shields.io/github/stars/YourUser/AvenUI?style=for-the-badge&color=84cc16&labelColor=0a0b0d)](https://github.com/YourUser/AvenUI/stargazers)
-[![Forks](https://img.shields.io/github/forks/YourUser/AvenUI?style=for-the-badge&color=84cc16&labelColor=0a0b0d)](https://github.com/YourUser/AvenUI/network/members)
+[![Version](https://img.shields.io/badge/version-1.0.0-84cc16?style=for-the-badge&labelColor=0a0b0d)](#)
+[![License](https://img.shields.io/badge/license-MIT-84cc16?style=for-the-badge&labelColor=0a0b0d)](#)
+[![Lua](https://img.shields.io/badge/lua-5.1-2C2D72?style=for-the-badge&labelColor=0a0b0d&logo=lua&logoColor=white)](#)
+[![Roblox](https://img.shields.io/badge/roblox-compatible-84cc16?style=for-the-badge&labelColor=0a0b0d)](#)
+[![Stars](https://img.shields.io/github/stars/YourUser/AvenUI?style=for-the-badge&color=84cc16&labelColor=0a0b0d)](#)
 
 <br/>
 
-<a href="#-why-avenui--kenapa-avenui">Why AvenUI</a> ·
-<a href="#-features--fitur">Features</a> ·
-<a href="#-installation--instalasi">Installation</a> ·
-<a href="#-quick-start--mulai-cepat">Quick Start</a> ·
-<a href="#-elements--elemen">Elements</a> ·
-<a href="#-icons--ikon">Icons</a> ·
-<a href="#-theme--tema">Theme</a> ·
-<a href="#-api-reference">API</a>
+[![Why](#-why-avenui)](#-why-avenui) ·
+[![Features](#-features)](#-features) ·
+[![Install](#-installation)](#-installation) ·
+[![Quick Start](#-quick-start)](#-quick-start) ·
+[![Elements](#-elements)](#-elements) ·
+[![Icons](#-icons)](#-icons) ·
+[![Theme](#-theme)](#-theme) ·
+[![API](#-api-reference)](#-api-reference)
+
+<br/>
+
+<img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="100%" height="2"/>
 
 </div>
 
+<br/>
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+## 🇬🇧 English
+
+**AvenUI** is a premium Roblox UI library built for executors. It ships with a **custom vector icon engine** — every icon is drawn from scratch using `Frame` primitives, so it never depends on Roblox's asset marketplace, unicode characters, or third-party icon packs.
+
+**Why this matters:**
+
+- Icons **never break** — no moderation, no missing assets
+- **Zero network calls** — everything is local
+- **Fully themable** — one line to rebrand the entire UI
+- **Tiny footprint** — one file, no dependencies
+
+</td>
+<td width="50%" valign="top">
+
+## 🇮🇩 Indonesia
+
+**AvenUI** adalah library UI Roblox premium yang dibuat untuk executor. Library ini hadir dengan **engine ikon vektor kustom** — setiap ikon digambar dari nol menggunakan primitif `Frame`, sehingga tidak bergantung pada marketplace aset Roblox, karakter unicode, atau pak ikon pihak ketiga.
+
+**Kenapa ini penting:**
+
+- Ikon **tidak akan pernah rusak** — tanpa moderasi, tanpa aset hilang
+- **Tanpa network call** — semuanya lokal
+- **Bisa diganti temanya** — satu baris untuk mengganti seluruh UI
+- **Ukuran kecil** — satu file, tanpa dependensi
+
+</td>
+</tr>
+</table>
+
 ---
 
-## ⚡ Why AvenUI? / Kenapa AvenUI?
+<div align="center">
+
+## ✨ Features / Fitur
+
+</div>
 
 <table>
 <tr>
@@ -43,35 +91,6 @@
 <tr>
 <td>
 
-Most UI libraries depend on Roblox's asset marketplace, unicode characters, or massive third-party icon packs. That means slow load times, broken icons after moderation, and hidden network calls.
-
-**AvenUI does none of that.**
-
-Every icon is **drawn pixel-by-pixel** using `Frame` primitives and `UIStroke`. Every color comes from a **runtime-swappable theme**. Every element is **under 40 lines** — readable, hackable, yours.
-
-</td>
-<td>
-
-Sebagian besar library UI bergantung pada marketplace aset Roblox, karakter unicode, atau pak icon pihak ketiga yang besar. Akibatnya: loading lambat, ikon rusak setelah moderasi, dan panggilan network tersembunyi.
-
-**AvenUI tidak seperti itu.**
-
-Setiap ikon **digambar pixel-by-pixel** menggunakan primitif `Frame` dan `UIStroke`. Setiap warna berasal dari **tema yang bisa diganti saat runtime**. Setiap elemen **di bawah 40 baris** — mudah dibaca, mudah dimodifikasi, milikmu.
-
-</td>
-</tr>
-</table>
-
----
-
-## ✨ Features / Fitur
-
-<table>
-<tr>
-<td width="50%" valign="top">
-
-### 🇬🇧 English
-
 - 🎨 **60+ vector icons** drawn from scratch
 - 🚀 **Single-file**, zero dependencies
 - 🌈 Runtime **theme swappable**
@@ -79,16 +98,16 @@ Setiap ikon **digambar pixel-by-pixel** menggunakan primitif `Frame` dan `UIStro
 - 🔒 No network calls, no HTTP requests
 - 💎 Smooth 60+ FPS UI animations
 - 🖱️ **Draggable** window with top bar
-- 🔽 **Minimize** button and hotkey toggle
-- 🔍 **Search** filter inside sidebar
+- 🔽 **Minimize** button + hotkey toggle
+- 🔍 **Search filter** in sidebar
 - 📝 Fully documented API
 - 🧩 Modular element system
 - 🎯 Zero external asset IDs
+- 🔔 **Notification** toast system
+- 🎛️ **11 element types** included
 
 </td>
-<td width="50%" valign="top">
-
-### 🇮🇩 Indonesia
+<td>
 
 - 🎨 **60+ ikon vektor** digambar dari nol
 - 🚀 **Satu file**, tanpa dependensi
@@ -97,11 +116,13 @@ Setiap ikon **digambar pixel-by-pixel** menggunakan primitif `Frame` dan `UIStro
 - 🔒 Tanpa network call, tanpa HTTP
 - 💎 Animasi UI mulus 60+ FPS
 - 🖱️ **Window bisa digeser** dari top bar
-- 🔽 Tombol **minimize** dan hotkey toggle
-- 🔍 **Fitur pencarian** di dalam sidebar
+- 🔽 Tombol **minimize** + hotkey toggle
+- 🔍 **Filter pencarian** di sidebar
 - 📝 API terdokumentasi lengkap
 - 🧩 Sistem elemen modular
 - 🎯 Tanpa asset ID eksternal
+- 🔔 Sistem **notifikasi** toast
+- 🎛️ **11 tipe elemen** tersedia
 
 </td>
 </tr>
@@ -109,31 +130,39 @@ Setiap ikon **digambar pixel-by-pixel** menggunakan primitif `Frame` dan `UIStro
 
 ---
 
+<div align="center">
+
 ## 📦 Installation / Instalasi
+
+</div>
 
 ### 🇬🇧 English
 
-**One-liner (recommended):**
+**Option 1 — One-liner (recommended):**
 
 ```lua
 local AvenUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/YourUser/AvenUI/main/AvenUI.lua"))()
 ```
 
-**Inline:** Download [`AvenUI.lua`](AvenUI.lua) and drop it into your project.
+**Option 2 — Inline:** Download [`AvenUI.lua`](AvenUI.lua) and drop it into your project.
 
 ### 🇮🇩 Indonesia
 
-**Satu baris (direkomendasikan):**
+**Opsi 1 — Satu baris (direkomendasikan):**
 
 ```lua
 local AvenUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/YourUser/AvenUI/main/AvenUI.lua"))()
 ```
 
-**Inline:** Unduh [`AvenUI.lua`](AvenUI.lua) lalu masukkan ke dalam project kamu.
+**Opsi 2 — Inline:** Unduh [`AvenUI.lua`](AvenUI.lua) lalu masukkan ke dalam project kamu.
 
 ---
 
+<div align="center">
+
 ## 🚀 Quick Start / Mulai Cepat
+
+</div>
 
 **🇬🇧 The shortest working example — 8 lines.**
 **🇮🇩 Contoh terpendek yang langsung jalan — 8 baris.**
@@ -156,12 +185,17 @@ Tab:Toggle({
 })
 ```
 
-**🇬🇧 Run it — a window appears in the center of your screen. Drag by the top bar, minimize with `–`, hide with <kbd>Right Ctrl</kbd>.**
-**🇮🇩 Jalankan — window muncul di tengah layar. Geser dengan menahan top bar, minimize dengan `–`, sembunyikan dengan <kbd>Ctrl Kanan</kbd>.**
+> **🇬🇧** Run it — a window appears in the center of your screen. Drag by the top bar, minimize with `–`, hide with <kbd>Right Ctrl</kbd>.
+>
+> **🇮🇩** Jalankan — window muncul di tengah layar. Geser dengan menahan top bar, minimize dengan `–`, sembunyikan dengan <kbd>Ctrl Kanan</kbd>.
 
 ---
 
+<div align="center">
+
 ## 🖼 Full Example / Contoh Lengkap
+
+</div>
 
 **🇬🇧 Complete showcase with every element type.**
 **🇮🇩 Contoh lengkap dengan semua tipe elemen.**
@@ -281,7 +315,11 @@ MiscTab:Button({
 
 ---
 
+<div align="center">
+
 ## 🧩 Elements / Elemen
+
+</div>
 
 <table>
 <tr>
@@ -343,29 +381,38 @@ MiscTab:Button({
 
 ---
 
+<div align="center">
+
 ## 🎨 Icons / Ikon
 
-### 🇬🇧 English
+</div>
+
+<table>
+<tr>
+<th width="50%">🇬🇧 English</th>
+<th width="50%">🇮🇩 Indonesia</th>
+</tr>
+<tr>
+<td>
 
 AvenUI ships with **60+ hand-drawn vector icons**. Every icon is built from `Frame` primitives — no unicode, no emoji, no external assets.
 
 Three ways to add an icon:
 
-```lua
-Tab:Toggle({ Name = "Named",     Icon = "gear" })              -- by name
-Tab:Toggle({ Name = "Asset ID",  Icon = 1234567890 })          -- numeric ID
-Tab:Toggle({ Name = "Asset URL", Icon = "rbxassetid://1234567890" })
-```
-
-### 🇮🇩 Indonesia
+</td>
+<td>
 
 AvenUI hadir dengan **60+ ikon vektor yang digambar manual**. Setiap ikon dibuat dari primitif `Frame` — tanpa unicode, tanpa emoji, tanpa aset eksternal.
 
 Tiga cara menambahkan ikon:
 
+</td>
+</tr>
+</table>
+
 ```lua
-Tab:Toggle({ Name = "Named",     Icon = "gear" })              -- berdasarkan nama
-Tab:Toggle({ Name = "Asset ID",  Icon = 1234567890 })          -- ID numerik
+Tab:Toggle({ Name = "Named",     Icon = "gear" })              -- by name
+Tab:Toggle({ Name = "Asset ID",  Icon = 1234567890 })          -- numeric ID
 Tab:Toggle({ Name = "Asset URL", Icon = "rbxassetid://1234567890" })
 ```
 
@@ -403,7 +450,11 @@ print(AvenUI.IconNames)
 
 ---
 
+<div align="center">
+
 ## 🎭 Theme / Tema
+
+</div>
 
 ### Override Theme / Ganti Tema
 
@@ -457,7 +508,11 @@ print(theme.Accent)
 
 ---
 
+<div align="center">
+
 ## 📚 API Reference
+
+</div>
 
 ### `AvenUI:CreateWindow(opts)`
 
@@ -506,7 +561,11 @@ print(theme.Accent)
 
 ---
 
+<div align="center">
+
 ## 🌐 Compatibility / Kompatibilitas
+
+</div>
 
 | Executor | Status |
 |---|---|
@@ -526,6 +585,8 @@ print(theme.Accent)
 
 ---
 
+<div align="center">
+
 ## 🛠 Contributing / Kontribusi
 
 **EN:** Pull requests are welcome. For major changes, please open an issue first.
@@ -538,15 +599,9 @@ print(theme.Accent)
 **EN:** MIT — see [LICENSE](LICENSE).
 **ID:** MIT — lihat [LICENSE](LICENSE).
 
----
+<br/>
 
-<div align="center">
-
-**Made by Gixss**
-
-[Discord](https://discord.gg/q7PZBsbpD)
-
-<img src="https://capsule-render.vercel.app/api?type=waving&color=84cc16&height=100&section=footer" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:84cc16,100:4d7c0f&height=140&section=footer&text=Made%20by%20Gixss&fontSize=22&fontColor=ffffff&fontAlignY=75" width="100%"/>
 
 </div>
 ```
