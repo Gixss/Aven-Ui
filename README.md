@@ -1,142 +1,70 @@
-```markdown
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:84cc16,100:4d7c0f&height=260&section=header&text=AvenUI&fontSize=120&fontColor=ffffff&fontAlignY=38&desc=Premium%20Roblox%20UI%20Library&descAlignY=62&descSize=20&animation=fadeIn" width="100%"/>
+# AvenUI
 
-<br/>
+### A premium, dependency-free Roblox UI library with hand-drawn vector icons
 
-**A premium, dependency-free Roblox UI library with hand-drawn vector icons.**
-
-**Library UI Roblox premium tanpa dependensi, dengan ikon vektor yang digambar dari nol.**
-
-<br/>
+### Library UI Roblox premium tanpa dependensi, dengan ikon vektor yang digambar dari nol
 
 **No emoji · No unicode · No external assets · Just clean UI**
 
 **Tanpa emoji · Tanpa unicode · Tanpa aset eksternal · Hanya UI bersih**
 
-<br/>
+<br>
 
-[![Version](https://img.shields.io/badge/version-1.0.0-84cc16?style=for-the-badge&labelColor=0a0b0d)](#)
-[![License](https://img.shields.io/badge/license-MIT-84cc16?style=for-the-badge&labelColor=0a0b0d)](#)
-[![Lua](https://img.shields.io/badge/lua-5.1-2C2D72?style=for-the-badge&labelColor=0a0b0d&logo=lua&logoColor=white)](#)
-[![Roblox](https://img.shields.io/badge/roblox-compatible-84cc16?style=for-the-badge&labelColor=0a0b0d)](#)
-[![Stars](https://img.shields.io/github/stars/YourUser/AvenUI?style=for-the-badge&color=84cc16&labelColor=0a0b0d)](#)
+[![Version](https://img.shields.io/badge/version-1.0.0-84cc16?style=for-the-badge&labelColor=0a0b0d)](https://github.com/YourUser/AvenUI/releases)
+[![License](https://img.shields.io/badge/license-MIT-84cc16?style=for-the-badge&labelColor=0a0b0d)](LICENSE)
+[![Lua](https://img.shields.io/badge/lua-5.1-2C2D72?style=for-the-badge&labelColor=0a0b0d&logo=lua&logoColor=white)](https://www.lua.org)
+[![Roblox](https://img.shields.io/badge/roblox-compatible-84cc16?style=for-the-badge&labelColor=0a0b0d)](https://www.roblox.com)
+[![Stars](https://img.shields.io/github/stars/YourUser/AvenUI?style=for-the-badge&color=84cc16&labelColor=0a0b0d)](https://github.com/YourUser/AvenUI/stargazers)
 
-<br/>
+<br>
 
-[![Why](#-why-avenui)](#-why-avenui) ·
-[![Features](#-features)](#-features) ·
-[![Install](#-installation)](#-installation) ·
-[![Quick Start](#-quick-start)](#-quick-start) ·
-[![Elements](#-elements)](#-elements) ·
-[![Icons](#-icons)](#-icons) ·
-[![Theme](#-theme)](#-theme) ·
-[![API](#-api-reference)](#-api-reference)
-
-<br/>
-
-<img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="100%" height="2"/>
+[Why](#why-avenui) · [Features](#features) · [Installation](#installation) · [Quick Start](#quick-start) · [Elements](#elements) · [Icons](#icons) · [Theme](#theme) · [API](#api-reference)
 
 </div>
-
-<br/>
-
-<table>
-<tr>
-<td width="50%" valign="top">
-
-## 🇬🇧 English
-
-**AvenUI** is a premium Roblox UI library built for executors. It ships with a **custom vector icon engine** — every icon is drawn from scratch using `Frame` primitives, so it never depends on Roblox's asset marketplace, unicode characters, or third-party icon packs.
-
-**Why this matters:**
-
-- Icons **never break** — no moderation, no missing assets
-- **Zero network calls** — everything is local
-- **Fully themable** — one line to rebrand the entire UI
-- **Tiny footprint** — one file, no dependencies
-
-</td>
-<td width="50%" valign="top">
-
-## 🇮🇩 Indonesia
-
-**AvenUI** adalah library UI Roblox premium yang dibuat untuk executor. Library ini hadir dengan **engine ikon vektor kustom** — setiap ikon digambar dari nol menggunakan primitif `Frame`, sehingga tidak bergantung pada marketplace aset Roblox, karakter unicode, atau pak ikon pihak ketiga.
-
-**Kenapa ini penting:**
-
-- Ikon **tidak akan pernah rusak** — tanpa moderasi, tanpa aset hilang
-- **Tanpa network call** — semuanya lokal
-- **Bisa diganti temanya** — satu baris untuk mengganti seluruh UI
-- **Ukuran kecil** — satu file, tanpa dependensi
-
-</td>
-</tr>
-</table>
 
 ---
 
-<div align="center">
+## Why AvenUI?
 
-## ✨ Features / Fitur
+### English
 
-</div>
+Most UI libraries depend on Roblox's asset marketplace, unicode characters, or massive third-party icon packs. That means slow load times, broken icons after moderation, and hidden network calls.
 
-<table>
-<tr>
-<th width="50%">🇬🇧 English</th>
-<th width="50%">🇮🇩 Indonesia</th>
-</tr>
-<tr>
-<td>
+**AvenUI does none of that.**
 
-- 🎨 **60+ vector icons** drawn from scratch
-- 🚀 **Single-file**, zero dependencies
-- 🌈 Runtime **theme swappable**
-- 📱 **Touch-friendly** for mobile
-- 🔒 No network calls, no HTTP requests
-- 💎 Smooth 60+ FPS UI animations
-- 🖱️ **Draggable** window with top bar
-- 🔽 **Minimize** button + hotkey toggle
-- 🔍 **Search filter** in sidebar
-- 📝 Fully documented API
-- 🧩 Modular element system
-- 🎯 Zero external asset IDs
-- 🔔 **Notification** toast system
-- 🎛️ **11 element types** included
+Every icon is **drawn pixel-by-pixel** using `Frame` primitives and `UIStroke`. Every color comes from a **runtime-swappable theme**. Every element is **under 40 lines** — readable, hackable, yours.
 
-</td>
-<td>
+### Indonesia
 
-- 🎨 **60+ ikon vektor** digambar dari nol
-- 🚀 **Satu file**, tanpa dependensi
-- 🌈 **Tema bisa diganti** saat runtime
-- 📱 **Ramah sentuhan** untuk mobile
-- 🔒 Tanpa network call, tanpa HTTP
-- 💎 Animasi UI mulus 60+ FPS
-- 🖱️ **Window bisa digeser** dari top bar
-- 🔽 Tombol **minimize** + hotkey toggle
-- 🔍 **Filter pencarian** di sidebar
-- 📝 API terdokumentasi lengkap
-- 🧩 Sistem elemen modular
-- 🎯 Tanpa asset ID eksternal
-- 🔔 Sistem **notifikasi** toast
-- 🎛️ **11 tipe elemen** tersedia
+Sebagian besar library UI bergantung pada marketplace aset Roblox, karakter unicode, atau pak ikon pihak ketiga yang besar. Akibatnya: loading lambat, ikon rusak setelah moderasi, dan panggilan network tersembunyi.
 
-</td>
-</tr>
-</table>
+**AvenUI tidak seperti itu.**
+
+Setiap ikon **digambar pixel-by-pixel** menggunakan primitif `Frame` dan `UIStroke`. Setiap warna berasal dari **tema yang bisa diganti saat runtime**. Setiap elemen **di bawah 40 baris** — mudah dibaca, mudah dimodifikasi, milikmu.
 
 ---
 
-<div align="center">
+## Features
 
-## 📦 Installation / Instalasi
+| Feature | English | Indonesia |
+|---|---|---|
+| Icons | 60+ hand-drawn vector icons | 60+ ikon vektor yang digambar manual |
+| Size | Single file, zero dependencies | Satu file, tanpa dependensi |
+| Theme | Runtime swappable | Bisa diganti saat runtime |
+| Mobile | Touch-friendly | Ramah sentuhan |
+| Network | No HTTP calls at all | Tanpa network call sama sekali |
+| Performance | Smooth 60+ FPS animations | Animasi UI mulus 60+ FPS |
+| Window | Draggable, minimizable | Bisa digeser, bisa di-minimize |
+| Search | Built-in sidebar filter | Filter pencarian di sidebar |
+| Elements | 11 element types | 11 tipe elemen |
 
-</div>
+---
 
-### 🇬🇧 English
+## Installation
+
+### English
 
 **Option 1 — One-liner (recommended):**
 
@@ -144,9 +72,9 @@
 local AvenUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/YourUser/AvenUI/main/AvenUI.lua"))()
 ```
 
-**Option 2 — Inline:** Download [`AvenUI.lua`](AvenUI.lua) and drop it into your project.
+**Option 2 — Inline:** Download `AvenUI.lua` and drop it into your project.
 
-### 🇮🇩 Indonesia
+### Indonesia
 
 **Opsi 1 — Satu baris (direkomendasikan):**
 
@@ -154,18 +82,15 @@ local AvenUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/YourUs
 local AvenUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/YourUser/AvenUI/main/AvenUI.lua"))()
 ```
 
-**Opsi 2 — Inline:** Unduh [`AvenUI.lua`](AvenUI.lua) lalu masukkan ke dalam project kamu.
+**Opsi 2 — Inline:** Unduh `AvenUI.lua` lalu masukkan ke dalam project kamu.
 
 ---
 
-<div align="center">
+## Quick Start
 
-## 🚀 Quick Start / Mulai Cepat
+**English:** The shortest working example — 8 lines.
 
-</div>
-
-**🇬🇧 The shortest working example — 8 lines.**
-**🇮🇩 Contoh terpendek yang langsung jalan — 8 baris.**
+**Indonesia:** Contoh terpendek yang langsung jalan — 8 baris.
 
 ```lua
 local AvenUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/YourUser/AvenUI/main/AvenUI.lua"))()
@@ -185,20 +110,17 @@ Tab:Toggle({
 })
 ```
 
-> **🇬🇧** Run it — a window appears in the center of your screen. Drag by the top bar, minimize with `–`, hide with <kbd>Right Ctrl</kbd>.
+> **English:** Run it — a window appears in the center of your screen. Drag by the top bar, minimize with the `-` button, hide with `Right Ctrl`.
 >
-> **🇮🇩** Jalankan — window muncul di tengah layar. Geser dengan menahan top bar, minimize dengan `–`, sembunyikan dengan <kbd>Ctrl Kanan</kbd>.
+> **Indonesia:** Jalankan — window muncul di tengah layar. Geser dengan menahan top bar, minimize dengan tombol `-`, sembunyikan dengan `Ctrl Kanan`.
 
 ---
 
-<div align="center">
+## Full Example
 
-## 🖼 Full Example / Contoh Lengkap
+**English:** Complete showcase with every element type.
 
-</div>
-
-**🇬🇧 Complete showcase with every element type.**
-**🇮🇩 Contoh lengkap dengan semua tipe elemen.**
+**Indonesia:** Contoh lengkap dengan semua tipe elemen.
 
 ```lua
 local AvenUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/YourUser/AvenUI/main/AvenUI.lua"))()
@@ -212,7 +134,7 @@ local Window = AvenUI:CreateWindow({
     ToggleKey = Enum.KeyCode.RightControl,
 })
 
--- ═══ Tab 1: Main ═══
+-- Tab 1: Main
 local MainTab = Window:CreateTab("Main", "home")
 
 MainTab:Section("Character", "user")
@@ -249,7 +171,7 @@ MainTab:Toggle({
     CurrentValue = false,
 })
 
--- ═══ Tab 2: Visual ═══
+-- Tab 2: Visual
 local VisualTab = Window:CreateTab("Visual", "eye")
 
 VisualTab:Section("Rendering", "sparkle")
@@ -276,7 +198,7 @@ VisualTab:Button({
     end,
 })
 
--- ═══ Tab 3: Misc ═══
+-- Tab 3: Misc
 local MiscTab = Window:CreateTab("Misc", "settings")
 
 MiscTab:Section("Input", "key")
@@ -315,108 +237,44 @@ MiscTab:Button({
 
 ---
 
-<div align="center">
+## Elements
 
-## 🧩 Elements / Elemen
-
-</div>
-
-<table>
-<tr>
-<th align="left">Element</th>
-<th align="left">Method</th>
-<th align="left">Returns</th>
-</tr>
-<tr>
-<td><b>Section</b></td>
-<td><code>Tab:Section(text, icon?)</code></td>
-<td>—</td>
-</tr>
-<tr>
-<td><b>Toggle</b></td>
-<td><code>Tab:Toggle(opts)</code></td>
-<td><code>{ Set, Get }</code></td>
-</tr>
-<tr>
-<td><b>Slider</b></td>
-<td><code>Tab:Slider(opts)</code></td>
-<td><code>{ Set, Get }</code></td>
-</tr>
-<tr>
-<td><b>Button</b></td>
-<td><code>Tab:Button(opts)</code></td>
-<td>—</td>
-</tr>
-<tr>
-<td><b>Input</b></td>
-<td><code>Tab:Input(opts)</code></td>
-<td><code>{ Set, Get }</code></td>
-</tr>
-<tr>
-<td><b>Dropdown</b></td>
-<td><code>Tab:Dropdown(opts)</code></td>
-<td><code>{ Set, Get }</code></td>
-</tr>
-<tr>
-<td><b>Keybind</b></td>
-<td><code>Tab:Keybind(opts)</code></td>
-<td><code>{ Get }</code></td>
-</tr>
-<tr>
-<td><b>Label</b></td>
-<td><code>Tab:Label(opts)</code></td>
-<td>—</td>
-</tr>
-<tr>
-<td><b>Divider</b></td>
-<td><code>Tab:Divider(text?)</code></td>
-<td>—</td>
-</tr>
-<tr>
-<td><b>Notification</b></td>
-<td><code>AvenUI:Notify(opts)</code></td>
-<td>—</td>
-</tr>
-</table>
+| Element | Method | Returns |
+|---|---|---|
+| Section | `Tab:Section(text, icon?)` | — |
+| Toggle | `Tab:Toggle(opts)` | `{ Set, Get }` |
+| Slider | `Tab:Slider(opts)` | `{ Set, Get }` |
+| Button | `Tab:Button(opts)` | — |
+| Input | `Tab:Input(opts)` | `{ Set, Get }` |
+| Dropdown | `Tab:Dropdown(opts)` | `{ Set, Get }` |
+| Keybind | `Tab:Keybind(opts)` | `{ Get }` |
+| Label | `Tab:Label(opts)` | — |
+| Divider | `Tab:Divider(text?)` | — |
+| Notification | `AvenUI:Notify(opts)` | — |
 
 ---
 
-<div align="center">
+## Icons
 
-## 🎨 Icons / Ikon
-
-</div>
-
-<table>
-<tr>
-<th width="50%">🇬🇧 English</th>
-<th width="50%">🇮🇩 Indonesia</th>
-</tr>
-<tr>
-<td>
+### English
 
 AvenUI ships with **60+ hand-drawn vector icons**. Every icon is built from `Frame` primitives — no unicode, no emoji, no external assets.
 
 Three ways to add an icon:
 
-</td>
-<td>
+### Indonesia
 
 AvenUI hadir dengan **60+ ikon vektor yang digambar manual**. Setiap ikon dibuat dari primitif `Frame` — tanpa unicode, tanpa emoji, tanpa aset eksternal.
 
 Tiga cara menambahkan ikon:
 
-</td>
-</tr>
-</table>
-
 ```lua
-Tab:Toggle({ Name = "Named",     Icon = "gear" })              -- by name
-Tab:Toggle({ Name = "Asset ID",  Icon = 1234567890 })          -- numeric ID
+Tab:Toggle({ Name = "Named",     Icon = "gear" })
+Tab:Toggle({ Name = "Asset ID",  Icon = 1234567890 })
 Tab:Toggle({ Name = "Asset URL", Icon = "rbxassetid://1234567890" })
 ```
 
-### Available Icon Names / Nama Ikon Tersedia
+### Available Icon Names
 
 ```
 activity     aim          alert        arrow-down   arrow-left
@@ -441,8 +299,7 @@ view         vip          volume       warning      wifi
 x            zap
 ```
 
-**🇬🇧 Get the full list at runtime:**
-**🇮🇩 Ambil daftar lengkap saat runtime:**
+Get the full list at runtime / Ambil daftar lengkap saat runtime:
 
 ```lua
 print(AvenUI.IconNames)
@@ -450,11 +307,7 @@ print(AvenUI.IconNames)
 
 ---
 
-<div align="center">
-
-## 🎭 Theme / Tema
-
-</div>
+## Theme
 
 ### Override Theme / Ganti Tema
 
@@ -508,64 +361,65 @@ print(theme.Accent)
 
 ---
 
-<div align="center">
-
-## 📚 API Reference
-
-</div>
+## API Reference
 
 ### `AvenUI:CreateWindow(opts)`
 
-**EN:** Creates the main window. Returns a `Window` object.
-**ID:** Membuat window utama. Mengembalikan objek `Window`.
+**English:** Creates the main window. Returns a `Window` object.
+
+**Indonesia:** Membuat window utama. Mengembalikan objek `Window`.
 
 ### `Window:CreateTab(name, icon)`
 
-**EN:** Creates a tab inside the window. Returns a `Tab` object.
-**ID:** Membuat tab di dalam window. Mengembalikan objek `Tab`.
+**English:** Creates a tab inside the window. Returns a `Tab` object.
+
+**Indonesia:** Membuat tab di dalam window. Mengembalikan objek `Tab`.
 
 ### `Window:SetTitle(text)`
 
-**EN:** Updates the window title at runtime.
-**ID:** Mengubah judul window saat runtime.
+**English:** Updates the window title at runtime.
+
+**Indonesia:** Mengubah judul window saat runtime.
 
 ### `Window:SetSubtitle(text)`
 
-**EN:** Updates the window subtitle at runtime.
-**ID:** Mengubah subtitle window saat runtime.
+**English:** Updates the window subtitle at runtime.
+
+**Indonesia:** Mengubah subtitle window saat runtime.
 
 ### `Window:Destroy()`
 
-**EN:** Destroys the entire UI.
-**ID:** Menghapus seluruh UI.
+**English:** Destroys the entire UI.
+
+**Indonesia:** Menghapus seluruh UI.
 
 ### `AvenUI:Notify(opts)`
 
-**EN:** Shows a notification toast.
-**ID:** Menampilkan notifikasi toast.
+**English:** Shows a notification toast.
+
+**Indonesia:** Menampilkan notifikasi toast.
 
 ### `AvenUI:SetTheme(table)`
 
-**EN:** Merges a table into the active theme.
-**ID:** Menggabungkan tabel ke dalam tema aktif.
+**English:** Merges a table into the active theme.
+
+**Indonesia:** Menggabungkan tabel ke dalam tema aktif.
 
 ### `AvenUI:SetAccent(color)`
 
-**EN:** Sets the primary accent color and recalculates derived colors.
-**ID:** Mengatur warna aksen utama dan menghitung ulang warna turunannya.
+**English:** Sets the primary accent color and recalculates derived colors.
+
+**Indonesia:** Mengatur warna aksen utama dan menghitung ulang warna turunannya.
 
 ### `AvenUI:GetTheme()`
 
-**EN:** Returns the current theme table.
-**ID:** Mengembalikan tabel tema saat ini.
+**English:** Returns the current theme table.
+
+**Indonesia:** Mengembalikan tabel tema saat ini.
 
 ---
 
-<div align="center">
-
-## 🌐 Compatibility / Kompatibilitas
-
-</div>
+## Compatibility
 
 | Executor | Status |
 |---|---|
@@ -580,28 +434,32 @@ print(theme.Accent)
 | Synapse | ✅ |
 | Vega X | ✅ |
 
-**EN:** Works on PC and mobile. Fully touch-compatible.
-**ID:** Berjalan di PC dan mobile. Sepenuhnya kompatibel dengan sentuhan.
+**English:** Works on PC and mobile. Fully touch-compatible.
+
+**Indonesia:** Berjalan di PC dan mobile. Sepenuhnya kompatibel dengan sentuhan.
+
+---
+
+## Contributing
+
+**English:** Pull requests are welcome. For major changes, please open an issue first.
+
+**Indonesia:** Pull request sangat diterima. Untuk perubahan besar, buka issue terlebih dahulu.
+
+---
+
+## License
+
+**English:** MIT — see [LICENSE](LICENSE).
+
+**Indonesia:** MIT — lihat [LICENSE](LICENSE).
 
 ---
 
 <div align="center">
 
-## 🛠 Contributing / Kontribusi
+**Made by Gixss**
 
-**EN:** Pull requests are welcome. For major changes, please open an issue first.
-**ID:** Pull request sangat diterima. Untuk perubahan besar, buka issue terlebih dahulu.
-
----
-
-## 📝 License / Lisensi
-
-**EN:** MIT — see [LICENSE](LICENSE).
-**ID:** MIT — lihat [LICENSE](LICENSE).
-
-<br/>
-
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:84cc16,100:4d7c0f&height=140&section=footer&text=Made%20by%20Gixss&fontSize=22&fontColor=ffffff&fontAlignY=75" width="100%"/>
+[Discord](https://discord.gg/q7PZBsbpD)
 
 </div>
-```
