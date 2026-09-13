@@ -50,7 +50,7 @@ AvenUI does none of that. Every icon is drawn pixel-by-pixel using `Frame` primi
 **Option 1 — One-liner (recommended) / Opsi 1 — Satu baris (direkomendasikan):**
 
 ```lua
-local AvenUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/YourUser/AvenUI/main/AvenUI.lua"))()
+local AvenUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Gixss/Aven-Ui/main/AvenUI.lua"))()
 ```
 
 **Option 2 — Local / Opsi 2 — Lokal:**
@@ -64,7 +64,7 @@ Download `AvenUI.lua` and drop it into your project.
 The shortest working example. / *Contoh terpendek yang langsung jalan.*
 
 ```lua
-local AvenUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/YourUser/AvenUI/main/AvenUI.lua"))()
+local AvenUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Gixss/Aven-Ui/main/AvenUI.lua"))()
 
 local Window = AvenUI:CreateWindow({
     Name     = "My Hub",
@@ -91,7 +91,7 @@ Tab:Toggle({
 Complete showcase with every element type. / *Contoh lengkap dengan semua tipe elemen.*
 
 ```lua
-local AvenUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/YourUser/AvenUI/main/AvenUI.lua"))()
+local AvenUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Gixss/Aven-Ui/main/AvenUI.lua"))()
 
 local Window = AvenUI:CreateWindow({
     Name      = "Aven Hub",
