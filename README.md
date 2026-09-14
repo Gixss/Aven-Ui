@@ -8,7 +8,7 @@
 
 <br>
 
-[![Version](https://img.shields.io/badge/version-2.0.0-84cc16?style=for-the-badge&labelColor=0a0b0d)](https://github.com/Gixss/Aven-Ui/releases)
+[![Version](https://img.shields.io/badge/version-2.1.0-84cc16?style=for-the-badge&labelColor=0a0b0d)](https://github.com/Gixss/Aven-Ui/releases)
 [![License](https://img.shields.io/badge/license-MIT-84cc16?style=for-the-badge&labelColor=0a0b0d)](LICENSE)
 [![Lua](https://img.shields.io/badge/lua-5.1-2C2D72?style=for-the-badge&labelColor=0a0b0d&logo=lua&logoColor=white)](https://www.lua.org)
 [![Roblox](https://img.shields.io/badge/roblox-compatible-84cc16?style=for-the-badge&labelColor=0a0b0d)](https://www.roblox.com)
@@ -16,7 +16,7 @@
 
 <br>
 
-[Why](#why-avenui) · [Features](#features) · [Installation](#installation) · [Quick Start](#quick-start) · [Full Example](#full-example) · [Elements](#elements) · [Icons](#icons) · [Config Storage](#config-storage) · [Theme](#theme) · [API](#api-reference)
+[Why](#why-avenui) · [Features](#features) · [Installation](#installation) · [Quick Start](#quick-start) · [Full Example](#full-example) · [Elements](#elements) · [Icons](#icons) · [Config Storage](#config-storage) · [Theme](#theme) · [API](#api-reference) · [Changelog](#changelog)
 
 </div>
 
@@ -30,7 +30,7 @@ Most UI libraries depend on Roblox's asset marketplace, unicode characters, or t
 
 AvenUI does none of that.
 
-Every icon is drawn pixel-by-pixel using `Frame` primitives and `UIStroke`. Every color comes from a runtime-swappable theme. Every element is under 40 lines — readable, hackable, yours.
+Every icon is drawn pixel-by-pixel using `Frame` primitives. Every color comes from a runtime-swappable theme. Every element is under 40 lines — readable, hackable, yours.
 
 ### Indonesia
 
@@ -38,7 +38,7 @@ Sebagian besar library UI bergantung pada marketplace aset Roblox, karakter unic
 
 AvenUI tidak seperti itu.
 
-Setiap ikon digambar pixel-by-pixel menggunakan primitif `Frame` dan `UIStroke`. Setiap warna berasal dari tema yang bisa diganti saat runtime. Setiap elemen di bawah 40 baris — mudah dibaca, mudah dimodifikasi, milikmu.
+Setiap ikon digambar pixel-by-pixel menggunakan primitif `Frame`. Setiap warna berasal dari tema yang bisa diganti saat runtime. Setiap elemen di bawah 40 baris — mudah dibaca, mudah dimodifikasi, milikmu.
 
 ---
 
@@ -46,7 +46,7 @@ Setiap ikon digambar pixel-by-pixel menggunakan primitif `Frame` dan `UIStroke`.
 
 | Feature | English | Indonesia |
 |---|---|---|
-| Icons | 45+ hand-drawn Lucide-style icons | 45+ ikon Lucide-style digambar manual |
+| Icons | 45+ hand-drawn icons | 45+ ikon digambar manual |
 | Size | Single file, zero dependencies | Satu file, tanpa dependensi |
 | Theme | Runtime swappable | Bisa diganti saat runtime |
 | Mobile | Touch-friendly | Ramah sentuhan |
@@ -57,6 +57,7 @@ Setiap ikon digambar pixel-by-pixel menggunakan primitif `Frame` dan `UIStroke`.
 | Elements | 11 element types | 11 tipe elemen |
 | Storage | Auto-create `Aven UI` folder | Auto-bikin folder `Aven UI` |
 | Config | Save/load flags to disk | Simpan/muat flag ke disk |
+| Isolation | Element errors don't crash UI | Error elemen tidak crash UI |
 
 ---
 
@@ -267,11 +268,11 @@ MiscTab:Button({
 
 ### English
 
-AvenUI ships with 45+ hand-drawn Lucide-style icons. Thin strokes, rounded joints, clean look. Three ways to add an icon:
+AvenUI ships with 45+ hand-drawn icons. Thick strokes, rounded joints, readable at small sizes. Three ways to add an icon:
 
 ### Indonesia
 
-AvenUI hadir dengan 45+ ikon Lucide-style yang digambar manual. Garis tipis, ujung membulat, tampilan bersih. Tiga cara menambahkan ikon:
+AvenUI hadir dengan 45+ ikon yang digambar manual. Garis tebal, ujung membulat, tetap jelas di ukuran kecil. Tiga cara menambahkan ikon:
 
 ```lua
 Tab:Toggle({ Name = "Named",     Icon = "gear" })
@@ -295,7 +296,7 @@ lightning    link         list         location     lock
 map          menu         minus        moon         notif
 pause        pin          play         plus         power
 profile      protect      refresh      reload       remove
-script       search       settings     shield         sparkle
+script       search       settings     shield       sparkle
 star         stop         sun          sword        target
 terminal     tick         trash        upload       user
 view         vip          warning      x            zap
@@ -494,6 +495,34 @@ print(theme.Accent)
 **English:** Works on PC and mobile. Config storage requires the executor to support `writefile` / `readfile`.
 
 **Indonesia:** Berjalan di PC dan mobile. Penyimpanan config butuh executor yang mendukung `writefile` / `readfile`.
+
+---
+
+## Changelog
+
+### v2.1.0
+
+**Fixes**
+
+- Fixed flag system crash — `attempt to index nil with 'speed'` no longer occurs. Flags are now initialized before any access.
+- Fixed tabs not rendering — Visual and Misc tabs no longer disappear when an element inside another tab throws an error. Element-level errors are now isolated with `pcall` wrappers.
+- Fixed icons rendering as boxes at small sizes — every line is now a filled frame with minimum thickness of 1.6px instead of a stroke that overlapped itself.
+- Fixed `Unable to cast value to Object` — all `Instance.new` property assignments are wrapped in `pcall` inside the internal `mk()` helper.
+- Icon visibility improved at 14–16px sizes by scaling line thickness against icon size.
+
+### v2.0.0
+
+**New**
+
+- Auto-create `Aven UI` folder on library load.
+- `AvenUI:SaveFile`, `AvenUI:LoadFile`, `AvenUI:ListFiles` for disk operations.
+- `Window:SaveConfig`, `Window:LoadConfig` for JSON config persistence.
+- Flags support for Toggle and Slider via `Flag` field.
+- Redesigned icon engine with cleaner geometry.
+
+### v1.0.0
+
+- Initial release.
 
 ---
 
