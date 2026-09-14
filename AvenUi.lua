@@ -1,23 +1,13 @@
 --[[
-    AvenUI v2.0
+    AvenUI v2.1
     Author  : Gixss
     Discord : https://discord.gg/q7PZBsbpD
-
-    - Auto-create folder "Aven UI" saat dijalankan
-    - Lucide-style icons (stroke tipis, round joints)
-    - Support asset ID: Icon = 1234567890 atau "rbxassetid://..."
-    - Config save/load ke folder "Aven UI"
-
-    Usage:
-        local AvenUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Gixss/Aven-Ui/refs/heads/main/AvenUi.lua"))()
-        local Window = AvenUI:CreateWindow({ Name = "My Hub", Icon = "sparkle" })
-        local Tab = Window:CreateTab("Main", "home")
-        Tab:Toggle({ Name = "Auto Farm", Icon = "bolt", Callback = function(v) end })
+    Fixes   : flag init, icon stroke, error isolation
 ]]
 
 local AvenUI = {}
 AvenUI.__index = AvenUI
-AvenUI.Version = "2.0.0"
+AvenUI.Version = "2.1.0"
 
 local Players      = game:GetService("Players")
 local UserInput    = game:GetService("UserInputService")
@@ -25,9 +15,6 @@ local TweenService = game:GetService("TweenService")
 local HttpService  = game:GetService("HttpService")
 local LP           = Players.LocalPlayer
 
--- ═══════════════════════════════════════════════════════════
---  FOLDER "Aven UI" (auto-create)
--- ═══════════════════════════════════════════════════════════
 local FOLDER = "Aven UI"
 AvenUI.Folder = FOLDER
 
@@ -45,34 +32,27 @@ end
 
 function AvenUI:SaveFile(name, content)
     if not hasFileAPI() then return false end
-    local ok = pcall(function()
-        writefile(FOLDER .. "/" .. name, content)
-    end)
-    return ok
+    return pcall(function() writefile(FOLDER .. "/" .. name, content) end)
 end
 
 function AvenUI:LoadFile(name)
     if not hasFileAPI() then return nil end
-    local ok, content = pcall(function()
+    local ok, c = pcall(function()
         if type(isfile) == "function" and isfile(FOLDER .. "/" .. name) then
             return readfile(FOLDER .. "/" .. name)
         end
         return nil
     end)
-    return ok and content or nil
+    return ok and c or nil
 end
 
 function AvenUI:ListFiles()
     if not hasFileAPI() or type(listfiles) ~= "function" then return {} end
-    local ok, files = pcall(function()
-        return listfiles(FOLDER)
-    end)
-    return (ok and files) or {}
+    local ok, f = pcall(function() return listfiles(FOLDER) end)
+    return (ok and f) or {}
 end
 
--- ═══════════════════════════════════════════════════════════
---  THEME
--- ═══════════════════════════════════════════════════════════
+-- ═══ THEME ═══
 local Theme = {
     Bg          = Color3.fromRGB(10, 11, 14),
     BgTop       = Color3.fromRGB(15, 16, 20),
@@ -114,19 +94,21 @@ function AvenUI:SetAccent(c)
     Theme.BorderFocus = c
 end
 
--- ═══════════════════════════════════════════════════════════
---  HELPERS
--- ═══════════════════════════════════════════════════════════
+-- ═══ HELPERS ═══
 local function mk(c, p)
     local o = Instance.new(c)
-    for k, v in pairs(p or {}) do o[k] = v end
+    for k, v in pairs(p or {}) do
+        pcall(function() o[k] = v end)
+    end
     return o
 end
 local function cr(o, r) return mk("UICorner", { CornerRadius = UDim.new(0, r or Theme.Radius), Parent = o }) end
 local function st(o, col, th) return mk("UIStroke", { Color = col or Theme.Border, Thickness = th or 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border, Parent = o }) end
 local function pd(o, t, r, b, l) return mk("UIPadding", { PaddingTop = UDim.new(0, t or 0), PaddingRight = UDim.new(0, r or t or 0), PaddingBottom = UDim.new(0, b or t or 0), PaddingLeft = UDim.new(0, l or r or t or 0), Parent = o }) end
 local function tw(o, ti, props, style, dir)
-    TweenService:Create(o, TweenInfo.new(ti or 0.22, style or Enum.EasingStyle.Quart, dir or Enum.EasingDirection.Out), props):Play()
+    pcall(function()
+        TweenService:Create(o, TweenInfo.new(ti or 0.22, style or Enum.EasingStyle.Quart, dir or Enum.EasingDirection.Out), props):Play()
+    end)
 end
 local function parentGui()
     local ok, h = pcall(function() return gethui() end)
@@ -156,32 +138,25 @@ local function drag(frame, handle)
 end
 local function round(v, inc) return math.floor(v / inc + 0.5) * inc end
 
--- ═══════════════════════════════════════════════════════════
---  ICONS — Lucide style
---  stroke 1.4 · round joints · tipis & bersih
---  Layer 1: asset ID (angka / "rbxassetid://...")
---  Layer 2: nama yang ada di tabel → gambar Lucide-style
---  Layer 3: fallback ke bintang
--- ═══════════════════════════════════════════════════════════
+-- ═══ ICONS — thicker lines, visible at small sizes ═══
 local Icon = {}
 AvenUI.Icon = Icon
 
-local SW = 1.4
-
 local function ln(p, x1, y1, x2, y2, c, w)
+    w = math.max(w or 2, 1.6)
     local dx, dy = x2 - x1, y2 - y1
     local len = math.sqrt(dx * dx + dy * dy)
     local angle = math.deg(math.atan2(dy, dx))
     local f = mk("Frame", {
         Position = UDim2.new(0, x1, 0, y1),
-        Size = UDim2.new(0, len, 0, w or SW),
+        Size = UDim2.new(0, len, 0, w),
         AnchorPoint = Vector2.new(0, 0.5),
         BackgroundColor3 = c,
         BorderSizePixel = 0,
         Rotation = angle,
         Parent = p,
     })
-    cr(f, (w or SW) * 0.5)
+    cr(f, w * 0.5)
     return f
 end
 
@@ -189,13 +164,13 @@ local function circ(p, cx, cy, r, c, filled)
     local f = mk("Frame", {
         Position = UDim2.new(0, cx - r, 0, cy - r),
         Size = UDim2.new(0, r * 2, 0, r * 2),
-        BackgroundColor3 = filled and c or Color3.new(0, 0, 0),
+        BackgroundColor3 = c,
         BackgroundTransparency = filled and 0 or 1,
         BorderSizePixel = 0,
         Parent = p,
     })
     cr(f, r * 2)
-    if not filled then mk("UIStroke", { Color = c, Thickness = SW, Parent = f }) end
+    if not filled then st(f, c, math.max(1.6, r * 0.25)) end
     return f
 end
 
@@ -203,303 +178,254 @@ local function rect(p, x, y, w, h, r, c, filled)
     local f = mk("Frame", {
         Position = UDim2.new(0, x, 0, y),
         Size = UDim2.new(0, w, 0, h),
-        BackgroundColor3 = filled and c or Color3.new(0, 0, 0),
+        BackgroundColor3 = c,
         BackgroundTransparency = filled and 0 or 1,
         BorderSizePixel = 0,
         Parent = p,
     })
     if r then cr(f, r) end
-    if not filled then mk("UIStroke", { Color = c, Thickness = SW, Parent = f }) end
+    if not filled then st(f, c, 1.8) end
     return f
 end
 
 local D = {}
 
--- NAVIGATION
 D["home"] = function(p, s, c)
     local k = s / 24
-    ln(p, 3*k, 11*k, 12*k, 3*k, c, SW*k)
-    ln(p, 12*k, 3*k, 21*k, 11*k, c, SW*k)
-    rect(p, 5*k, 10*k, 14*k, 11*k, 2*k, c)
+    ln(p, 3*k, 11*k, 12*k, 3*k, c, 2*k)
+    ln(p, 12*k, 3*k, 21*k, 11*k, c, 2*k)
+    rect(p, 6*k, 11*k, 12*k, 10*k, 1.5*k, c)
 end
 D["house"] = D["home"]
 
 D["menu"] = function(p, s, c)
     local k = s / 24
-    ln(p, 4*k, 6*k, 20*k, 6*k, c, SW*k)
-    ln(p, 4*k, 12*k, 20*k, 12*k, c, SW*k)
-    ln(p, 4*k, 18*k, 20*k, 18*k, c, SW*k)
+    ln(p, 4*k, 7*k, 20*k, 7*k, c, 2*k)
+    ln(p, 4*k, 12*k, 20*k, 12*k, c, 2*k)
+    ln(p, 4*k, 17*k, 20*k, 17*k, c, 2*k)
 end
 D["list"] = D["menu"]
 
 D["grid"] = function(p, s, c)
     local k = s / 24
-    rect(p, 4*k, 4*k, 6*k, 6*k, 1*k, c)
-    rect(p, 14*k, 4*k, 6*k, 6*k, 1*k, c)
-    rect(p, 4*k, 14*k, 6*k, 6*k, 1*k, c)
-    rect(p, 14*k, 14*k, 6*k, 6*k, 1*k, c)
+    rect(p, 5*k, 5*k, 5*k, 5*k, 1*k, c, true)
+    rect(p, 14*k, 5*k, 5*k, 5*k, 1*k, c, true)
+    rect(p, 5*k, 14*k, 5*k, 5*k, 1*k, c, true)
+    rect(p, 14*k, 14*k, 5*k, 5*k, 1*k, c, true)
 end
 
--- CHEVRONS
 D["chevron-down"] = function(p, s, c)
     local k = s / 24
-    ln(p, 6*k, 9*k, 12*k, 15*k, c, SW*k)
-    ln(p, 12*k, 15*k, 18*k, 9*k, c, SW*k)
+    ln(p, 7*k, 10*k, 12*k, 15*k, c, 2*k)
+    ln(p, 12*k, 15*k, 17*k, 10*k, c, 2*k)
 end
 D["arrow-down"] = D["chevron-down"]
 
 D["chevron-up"] = function(p, s, c)
     local k = s / 24
-    ln(p, 6*k, 15*k, 12*k, 9*k, c, SW*k)
-    ln(p, 12*k, 9*k, 18*k, 15*k, c, SW*k)
+    ln(p, 7*k, 14*k, 12*k, 9*k, c, 2*k)
+    ln(p, 12*k, 9*k, 17*k, 14*k, c, 2*k)
 end
 D["arrow-up"] = D["chevron-up"]
 
 D["chevron-right"] = function(p, s, c)
     local k = s / 24
-    ln(p, 9*k, 6*k, 15*k, 12*k, c, SW*k)
-    ln(p, 15*k, 12*k, 9*k, 18*k, c, SW*k)
+    ln(p, 10*k, 7*k, 15*k, 12*k, c, 2*k)
+    ln(p, 15*k, 12*k, 10*k, 17*k, c, 2*k)
 end
 D["arrow-right"] = D["chevron-right"]
 
 D["chevron-left"] = function(p, s, c)
     local k = s / 24
-    ln(p, 15*k, 6*k, 9*k, 12*k, c, SW*k)
-    ln(p, 9*k, 12*k, 15*k, 18*k, c, SW*k)
+    ln(p, 14*k, 7*k, 9*k, 12*k, c, 2*k)
+    ln(p, 9*k, 12*k, 14*k, 17*k, c, 2*k)
 end
 D["arrow-left"] = D["chevron-left"]
 
--- ACTIONS
 D["plus"] = function(p, s, c)
     local k = s / 24
-    ln(p, 12*k, 5*k, 12*k, 19*k, c, SW*k)
-    ln(p, 5*k, 12*k, 19*k, 12*k, c, SW*k)
+    ln(p, 12*k, 5*k, 12*k, 19*k, c, 2*k)
+    ln(p, 5*k, 12*k, 19*k, 12*k, c, 2*k)
 end
 D["add"] = D["plus"]
 
 D["minus"] = function(p, s, c)
     local k = s / 24
-    ln(p, 5*k, 12*k, 19*k, 12*k, c, SW*k)
+    ln(p, 5*k, 12*k, 19*k, 12*k, c, 2*k)
 end
 D["remove"] = D["minus"]
 
 D["close"] = function(p, s, c)
     local k = s / 24
-    ln(p, 6*k, 6*k, 18*k, 18*k, c, SW*k)
-    ln(p, 18*k, 6*k, 6*k, 18*k, c, SW*k)
+    ln(p, 7*k, 7*k, 17*k, 17*k, c, 2*k)
+    ln(p, 17*k, 7*k, 7*k, 17*k, c, 2*k)
 end
 D["x"] = D["close"]; D["exit"] = D["close"]
 
 D["check"] = function(p, s, c)
     local k = s / 24
-    ln(p, 5*k, 12*k, 10*k, 17*k, c, SW*k)
-    ln(p, 10*k, 17*k, 19*k, 7*k, c, SW*k)
+    ln(p, 5*k, 12*k, 10*k, 17*k, c, 2.2*k)
+    ln(p, 10*k, 17*k, 19*k, 7*k, c, 2.2*k)
 end
 D["tick"] = D["check"]
 
 D["search"] = function(p, s, c)
     local k = s / 24
-    circ(p, 11*k, 11*k, 7*k, c, false)
-    ln(p, 16*k, 16*k, 21*k, 21*k, c, SW*k)
+    circ(p, 10*k, 10*k, 6*k, c, false)
+    ln(p, 15*k, 15*k, 20*k, 20*k, c, 2*k)
 end
 
 D["refresh"] = function(p, s, c)
     local k = s / 24
-    ln(p, 4*k, 12*k, 4*k, 8*k, c, SW*k)
-    ln(p, 4*k, 8*k, 8*k, 4*k, c, SW*k)
-    ln(p, 8*k, 4*k, 14*k, 4*k, c, SW*k)
-    ln(p, 14*k, 4*k, 18*k, 8*k, c, SW*k)
-    ln(p, 18*k, 8*k, 20*k, 12*k, c, SW*k)
-    ln(p, 20*k, 12*k, 18*k, 16*k, c, SW*k)
-    ln(p, 18*k, 16*k, 14*k, 20*k, c, SW*k)
-    ln(p, 14*k, 20*k, 12*k, 17*k, c, SW*k)
-    ln(p, 14*k, 20*k, 17*k, 20*k, c, SW*k)
+    circ(p, 12*k, 12*k, 8*k, c, false)
+    ln(p, 13*k, 4*k, 18*k, 4*k, c, 2*k)
+    ln(p, 18*k, 4*k, 18*k, 9*k, c, 2*k)
 end
 D["reload"] = D["refresh"]
 
--- OBJECTS
 D["user"] = function(p, s, c)
     local k = s / 24
     circ(p, 12*k, 8*k, 4*k, c, false)
-    ln(p, 4*k, 21*k, 4*k, 19*k, c, SW*k)
-    ln(p, 4*k, 19*k, 6*k, 17*k, c, SW*k)
-    ln(p, 6*k, 17*k, 18*k, 17*k, c, SW*k)
-    ln(p, 18*k, 17*k, 20*k, 19*k, c, SW*k)
-    ln(p, 20*k, 19*k, 20*k, 21*k, c, SW*k)
+    ln(p, 4*k, 20*k, 4*k, 18*k, c, 2*k)
+    ln(p, 4*k, 18*k, 6*k, 16*k, c, 2*k)
+    ln(p, 6*k, 16*k, 18*k, 16*k, c, 2*k)
+    ln(p, 18*k, 16*k, 20*k, 18*k, c, 2*k)
+    ln(p, 20*k, 18*k, 20*k, 20*k, c, 2*k)
 end
-D["profile"] = D["user"]; D["account"] = D["user"]
+D["profile"] = D["user"]
 
 D["settings"] = function(p, s, c)
     local k = s / 24
     for i = 0, 7 do
         local a = math.rad(i * 45)
-        local cx = 12 + math.cos(a) * 9
-        local cy = 12 + math.sin(a) * 9
-        ln(p, 12*k, 12*k, cx*k, cy*k, c, SW*k)
+        local x1 = 12 + math.cos(a) * 6
+        local y1 = 12 + math.sin(a) * 6
+        local x2 = 12 + math.cos(a) * 10
+        local y2 = 12 + math.sin(a) * 10
+        ln(p, x1*k, y1*k, x2*k, y2*k, c, 2*k)
     end
-    circ(p, 12*k, 12*k, 8*k, c, false)
+    circ(p, 12*k, 12*k, 7*k, c, false)
     circ(p, 12*k, 12*k, 3*k, c, false)
 end
 D["gear"] = D["settings"]; D["cog"] = D["settings"]
 
 D["bell"] = function(p, s, c)
     local k = s / 24
-    ln(p, 6*k, 17*k, 6*k, 12*k, c, SW*k)
-    ln(p, 6*k, 12*k, 8*k, 8*k, c, SW*k)
-    ln(p, 8*k, 8*k, 12*k, 6*k, c, SW*k)
-    ln(p, 12*k, 6*k, 16*k, 8*k, c, SW*k)
-    ln(p, 16*k, 8*k, 18*k, 12*k, c, SW*k)
-    ln(p, 18*k, 12*k, 18*k, 17*k, c, SW*k)
-    ln(p, 4*k, 17*k, 20*k, 17*k, c, SW*k)
-    ln(p, 10*k, 20*k, 14*k, 20*k, c, SW*k)
+    ln(p, 7*k, 16*k, 7*k, 11*k, c, 2*k)
+    ln(p, 7*k, 11*k, 9*k, 8*k, c, 2*k)
+    ln(p, 9*k, 8*k, 12*k, 6*k, c, 2*k)
+    ln(p, 12*k, 6*k, 15*k, 8*k, c, 2*k)
+    ln(p, 15*k, 8*k, 17*k, 11*k, c, 2*k)
+    ln(p, 17*k, 11*k, 17*k, 16*k, c, 2*k)
+    ln(p, 5*k, 16*k, 19*k, 16*k, c, 2*k)
+    ln(p, 10*k, 19*k, 14*k, 19*k, c, 2*k)
 end
 D["notif"] = D["bell"]; D["notification"] = D["bell"]
 
 D["lock"] = function(p, s, c)
     local k = s / 24
-    ln(p, 8*k, 11*k, 8*k, 8*k, c, SW*k)
-    ln(p, 8*k, 8*k, 10*k, 5*k, c, SW*k)
-    ln(p, 10*k, 5*k, 14*k, 5*k, c, SW*k)
-    ln(p, 14*k, 5*k, 16*k, 8*k, c, SW*k)
-    ln(p, 16*k, 8*k, 16*k, 11*k, c, SW*k)
-    rect(p, 5*k, 11*k, 14*k, 10*k, 1.5*k, c)
+    ln(p, 8*k, 11*k, 8*k, 8*k, c, 2*k)
+    ln(p, 8*k, 8*k, 12*k, 5*k, c, 2*k)
+    ln(p, 12*k, 5*k, 16*k, 8*k, c, 2*k)
+    ln(p, 16*k, 8*k, 16*k, 11*k, c, 2*k)
+    rect(p, 6*k, 11*k, 12*k, 9*k, 1.5*k, c)
 end
 
 D["shield"] = function(p, s, c)
     local k = s / 24
-    ln(p, 12*k, 3*k, 20*k, 6*k, c, SW*k)
-    ln(p, 20*k, 6*k, 20*k, 12*k, c, SW*k)
-    ln(p, 20*k, 12*k, 12*k, 21*k, c, SW*k)
-    ln(p, 12*k, 21*k, 4*k, 12*k, c, SW*k)
-    ln(p, 4*k, 12*k, 4*k, 6*k, c, SW*k)
-    ln(p, 4*k, 6*k, 12*k, 3*k, c, SW*k)
+    ln(p, 12*k, 4*k, 20*k, 7*k, c, 2*k)
+    ln(p, 20*k, 7*k, 20*k, 12*k, c, 2*k)
+    ln(p, 20*k, 12*k, 12*k, 20*k, c, 2*k)
+    ln(p, 12*k, 20*k, 4*k, 12*k, c, 2*k)
+    ln(p, 4*k, 12*k, 4*k, 7*k, c, 2*k)
+    ln(p, 4*k, 7*k, 12*k, 4*k, c, 2*k)
 end
 D["protect"] = D["shield"]
 
 D["star"] = function(p, s, c)
     local k = s / 24
-    ln(p, 12*k, 3*k, 14*k, 10*k, c, SW*k)
-    ln(p, 14*k, 10*k, 21*k, 10*k, c, SW*k)
-    ln(p, 21*k, 10*k, 16*k, 14*k, c, SW*k)
-    ln(p, 16*k, 14*k, 18*k, 21*k, c, SW*k)
-    ln(p, 18*k, 21*k, 12*k, 17*k, c, SW*k)
-    ln(p, 12*k, 17*k, 6*k, 21*k, c, SW*k)
-    ln(p, 6*k, 21*k, 8*k, 14*k, c, SW*k)
-    ln(p, 8*k, 14*k, 3*k, 10*k, c, SW*k)
-    ln(p, 3*k, 10*k, 10*k, 10*k, c, SW*k)
-    ln(p, 10*k, 10*k, 12*k, 3*k, c, SW*k)
+    ln(p, 12*k, 3*k, 14*k, 10*k, c, 1.8*k)
+    ln(p, 14*k, 10*k, 21*k, 10*k, c, 1.8*k)
+    ln(p, 21*k, 10*k, 16*k, 14*k, c, 1.8*k)
+    ln(p, 16*k, 14*k, 18*k, 21*k, c, 1.8*k)
+    ln(p, 18*k, 21*k, 12*k, 17*k, c, 1.8*k)
+    ln(p, 12*k, 17*k, 6*k, 21*k, c, 1.8*k)
+    ln(p, 6*k, 21*k, 8*k, 14*k, c, 1.8*k)
+    ln(p, 8*k, 14*k, 3*k, 10*k, c, 1.8*k)
+    ln(p, 3*k, 10*k, 10*k, 10*k, c, 1.8*k)
+    ln(p, 10*k, 10*k, 12*k, 3*k, c, 1.8*k)
 end
 D["favorite"] = D["star"]
 
 D["sparkle"] = function(p, s, c)
     local k = s / 24
-    ln(p, 12*k, 3*k, 12*k, 21*k, c, SW*k)
-    ln(p, 3*k, 12*k, 21*k, 12*k, c, SW*k)
-    ln(p, 6*k, 6*k, 18*k, 18*k, c, SW*k)
-    ln(p, 18*k, 6*k, 6*k, 18*k, c, SW*k)
+    ln(p, 12*k, 3*k, 12*k, 21*k, c, 2*k)
+    ln(p, 3*k, 12*k, 21*k, 12*k, c, 2*k)
 end
 
 D["heart"] = function(p, s, c)
     local k = s / 24
-    ln(p, 12*k, 21*k, 4*k, 13*k, c, SW*k)
-    ln(p, 4*k, 13*k, 4*k, 8*k, c, SW*k)
-    ln(p, 4*k, 8*k, 8*k, 5*k, c, SW*k)
-    ln(p, 8*k, 5*k, 12*k, 8*k, c, SW*k)
-    ln(p, 12*k, 8*k, 16*k, 5*k, c, SW*k)
-    ln(p, 16*k, 5*k, 20*k, 8*k, c, SW*k)
-    ln(p, 20*k, 8*k, 20*k, 13*k, c, SW*k)
-    ln(p, 20*k, 13*k, 12*k, 21*k, c, SW*k)
+    circ(p, 8*k, 9*k, 3*k, c, true)
+    circ(p, 16*k, 9*k, 3*k, c, true)
+    local t = mk("Frame", {
+        Position = UDim2.new(0, 5*k, 0, 9*k),
+        Size = UDim2.new(0, 14*k, 0, 14*k),
+        BackgroundColor3 = c,
+        BorderSizePixel = 0,
+        Rotation = 45,
+        Parent = p,
+    })
+    cr(t, 2*k)
 end
 D["like"] = D["heart"]
 
 D["info"] = function(p, s, c)
     local k = s / 24
     circ(p, 12*k, 12*k, 9*k, c, false)
-    circ(p, 12*k, 8*k, 0.9*k, c, true)
-    ln(p, 12*k, 11*k, 12*k, 17*k, c, SW*k)
+    circ(p, 12*k, 8*k, 1.2*k, c, true)
+    ln(p, 12*k, 11*k, 12*k, 17*k, c, 2*k)
 end
 D["about"] = D["info"]
 
 D["warning"] = function(p, s, c)
     local k = s / 24
-    ln(p, 12*k, 4*k, 21*k, 20*k, c, SW*k)
-    ln(p, 21*k, 20*k, 3*k, 20*k, c, SW*k)
-    ln(p, 3*k, 20*k, 12*k, 4*k, c, SW*k)
-    ln(p, 12*k, 10*k, 12*k, 15*k, c, SW*k)
-    circ(p, 12*k, 18*k, 0.9*k, c, true)
+    ln(p, 12*k, 4*k, 21*k, 20*k, c, 2*k)
+    ln(p, 21*k, 20*k, 3*k, 20*k, c, 2*k)
+    ln(p, 3*k, 20*k, 12*k, 4*k, c, 2*k)
+    ln(p, 12*k, 10*k, 12*k, 15*k, c, 2*k)
+    circ(p, 12*k, 18*k, 1.1*k, c, true)
 end
 D["alert"] = D["warning"]
 
 D["eye"] = function(p, s, c)
     local k = s / 24
-    ln(p, 2*k, 12*k, 5*k, 8*k, c, SW*k)
-    ln(p, 5*k, 8*k, 8*k, 5*k, c, SW*k)
-    ln(p, 8*k, 5*k, 12*k, 4*k, c, SW*k)
-    ln(p, 12*k, 4*k, 16*k, 5*k, c, SW*k)
-    ln(p, 16*k, 5*k, 19*k, 8*k, c, SW*k)
-    ln(p, 19*k, 8*k, 22*k, 12*k, c, SW*k)
-    ln(p, 22*k, 12*k, 19*k, 16*k, c, SW*k)
-    ln(p, 19*k, 16*k, 16*k, 19*k, c, SW*k)
-    ln(p, 16*k, 19*k, 12*k, 20*k, c, SW*k)
-    ln(p, 12*k, 20*k, 8*k, 19*k, c, SW*k)
-    ln(p, 8*k, 19*k, 5*k, 16*k, c, SW*k)
-    ln(p, 5*k, 16*k, 2*k, 12*k, c, SW*k)
+    ln(p, 3*k, 12*k, 8*k, 6*k, c, 1.8*k)
+    ln(p, 8*k, 6*k, 16*k, 6*k, c, 1.8*k)
+    ln(p, 16*k, 6*k, 21*k, 12*k, c, 1.8*k)
+    ln(p, 21*k, 12*k, 16*k, 18*k, c, 1.8*k)
+    ln(p, 16*k, 18*k, 8*k, 18*k, c, 1.8*k)
+    ln(p, 8*k, 18*k, 3*k, 12*k, c, 1.8*k)
     circ(p, 12*k, 12*k, 3*k, c, false)
 end
 D["view"] = D["eye"]
 
 D["code"] = function(p, s, c)
     local k = s / 24
-    ln(p, 8*k, 6*k, 3*k, 12*k, c, SW*k)
-    ln(p, 3*k, 12*k, 8*k, 18*k, c, SW*k)
-    ln(p, 16*k, 6*k, 21*k, 12*k, c, SW*k)
-    ln(p, 21*k, 12*k, 16*k, 18*k, c, SW*k)
+    ln(p, 8*k, 6*k, 3*k, 12*k, c, 2*k)
+    ln(p, 3*k, 12*k, 8*k, 18*k, c, 2*k)
+    ln(p, 16*k, 6*k, 21*k, 12*k, c, 2*k)
+    ln(p, 21*k, 12*k, 16*k, 18*k, c, 2*k)
 end
 D["dev"] = D["code"]; D["script"] = D["code"]
 
-D["terminal"] = function(p, s, c)
-    local k = s / 24
-    rect(p, 3*k, 4*k, 18*k, 16*k, 2*k, c)
-    ln(p, 7*k, 10*k, 11*k, 13*k, c, SW*k)
-    ln(p, 11*k, 13*k, 7*k, 16*k, c, SW*k)
-    ln(p, 13*k, 16*k, 18*k, 16*k, c, SW*k)
-end
-
-D["cpu"] = function(p, s, c)
-    local k = s / 24
-    rect(p, 6*k, 6*k, 12*k, 12*k, 1.5*k, c)
-    rect(p, 9*k, 9*k, 6*k, 6*k, 1*k, c)
-    ln(p, 9*k, 3*k, 9*k, 6*k, c, SW*k)
-    ln(p, 15*k, 3*k, 15*k, 6*k, c, SW*k)
-    ln(p, 9*k, 18*k, 9*k, 21*k, c, SW*k)
-    ln(p, 15*k, 18*k, 15*k, 21*k, c, SW*k)
-    ln(p, 3*k, 9*k, 6*k, 9*k, c, SW*k)
-    ln(p, 3*k, 15*k, 6*k, 15*k, c, SW*k)
-    ln(p, 18*k, 9*k, 21*k, 9*k, c, SW*k)
-    ln(p, 18*k, 15*k, 21*k, 15*k, c, SW*k)
-end
-D["chip"] = D["cpu"]
-
-D["activity"] = function(p, s, c)
-    local k = s / 24
-    ln(p, 3*k, 12*k, 6*k, 12*k, c, SW*k)
-    ln(p, 6*k, 12*k, 8*k, 6*k, c, SW*k)
-    ln(p, 8*k, 6*k, 10*k, 18*k, c, SW*k)
-    ln(p, 10*k, 18*k, 12*k, 9*k, c, SW*k)
-    ln(p, 12*k, 9*k, 14*k, 14*k, c, SW*k)
-    ln(p, 14*k, 14*k, 16*k, 11*k, c, SW*k)
-    ln(p, 16*k, 11*k, 18*k, 13*k, c, SW*k)
-    ln(p, 18*k, 13*k, 21*k, 12*k, c, SW*k)
-end
-
 D["bolt"] = function(p, s, c)
     local k = s / 24
-    ln(p, 13*k, 2*k, 4*k, 14*k, c, SW*k)
-    ln(p, 4*k, 14*k, 12*k, 14*k, c, SW*k)
-    ln(p, 12*k, 14*k, 11*k, 22*k, c, SW*k)
-    ln(p, 11*k, 22*k, 20*k, 10*k, c, SW*k)
-    ln(p, 20*k, 10*k, 12*k, 10*k, c, SW*k)
-    ln(p, 12*k, 10*k, 13*k, 2*k, c, SW*k)
+    ln(p, 14*k, 3*k, 6*k, 13*k, c, 2*k)
+    ln(p, 6*k, 13*k, 12*k, 13*k, c, 2*k)
+    ln(p, 12*k, 13*k, 10*k, 21*k, c, 2*k)
+    ln(p, 10*k, 21*k, 18*k, 11*k, c, 2*k)
+    ln(p, 18*k, 11*k, 12*k, 11*k, c, 2*k)
+    ln(p, 12*k, 11*k, 14*k, 3*k, c, 2*k)
 end
 D["power"] = D["bolt"]; D["zap"] = D["bolt"]; D["lightning"] = D["bolt"]
 
@@ -512,20 +438,18 @@ D["sun"] = function(p, s, c)
         local y1 = 12 + math.sin(a) * 8
         local x2 = 12 + math.cos(a) * 10
         local y2 = 12 + math.sin(a) * 10
-        ln(p, x1*k, y1*k, x2*k, y2*k, c, SW*k)
+        ln(p, x1*k, y1*k, x2*k, y2*k, c, 1.8*k)
     end
 end
 
 D["moon"] = function(p, s, c)
     local k = s / 24
-    circ(p, 12*k, 12*k, 9*k, c, false)
-    -- potong pakai lingkaran yang lebih terang
+    circ(p, 12*k, 12*k, 8*k, c, false)
     local cut = mk("Frame", {
-        Position = UDim2.new(0, 12*k, 0, 12*k),
-        Size = UDim2.new(0, 8*k, 0, 8*k),
+        Position = UDim2.new(0, 14*k, 0, 10*k),
+        Size = UDim2.new(0, 12*k, 0, 12*k),
         BackgroundColor3 = Theme.Bg,
         BorderSizePixel = 0,
-        AnchorPoint = Vector2.new(0.5, 0.5),
         Parent = p,
     })
     cr(cut, 100)
@@ -533,216 +457,204 @@ end
 
 D["key"] = function(p, s, c)
     local k = s / 24
-    circ(p, 8*k, 12*k, 5*k, c, false)
-    ln(p, 13*k, 12*k, 21*k, 12*k, c, SW*k)
-    ln(p, 18*k, 12*k, 18*k, 15*k, c, SW*k)
-    ln(p, 21*k, 12*k, 21*k, 15*k, c, SW*k)
+    circ(p, 8*k, 12*k, 4*k, c, false)
+    ln(p, 12*k, 12*k, 20*k, 12*k, c, 2*k)
+    ln(p, 18*k, 12*k, 18*k, 15*k, c, 2*k)
 end
 
 D["link"] = function(p, s, c)
     local k = s / 24
-    ln(p, 10*k, 14*k, 14*k, 10*k, c, SW*k)
-    ln(p, 14*k, 10*k, 17*k, 7*k, c, SW*k)
-    ln(p, 17*k, 7*k, 20*k, 10*k, c, SW*k)
-    ln(p, 20*k, 10*k, 17*k, 13*k, c, SW*k)
-    ln(p, 10*k, 14*k, 7*k, 17*k, c, SW*k)
-    ln(p, 7*k, 17*k, 4*k, 14*k, c, SW*k)
-    ln(p, 4*k, 14*k, 7*k, 11*k, c, SW*k)
-    ln(p, 7*k, 11*k, 10*k, 14*k, c, SW*k)
+    circ(p, 9*k, 9*k, 3*k, c, false)
+    circ(p, 15*k, 15*k, 3*k, c, false)
+    ln(p, 11*k, 11*k, 13*k, 13*k, c, 2*k)
 end
 
 D["folder"] = function(p, s, c)
     local k = s / 24
-    ln(p, 3*k, 19*k, 3*k, 6*k, c, SW*k)
-    ln(p, 3*k, 6*k, 9*k, 6*k, c, SW*k)
-    ln(p, 9*k, 6*k, 10*k, 8*k, c, SW*k)
-    ln(p, 10*k, 8*k, 21*k, 8*k, c, SW*k)
-    ln(p, 21*k, 8*k, 21*k, 19*k, c, SW*k)
-    ln(p, 21*k, 19*k, 3*k, 19*k, c, SW*k)
+    ln(p, 4*k, 19*k, 4*k, 6*k, c, 2*k)
+    ln(p, 4*k, 6*k, 10*k, 6*k, c, 2*k)
+    ln(p, 10*k, 6*k, 11*k, 9*k, c, 2*k)
+    ln(p, 11*k, 9*k, 20*k, 9*k, c, 2*k)
+    ln(p, 20*k, 9*k, 20*k, 19*k, c, 2*k)
+    ln(p, 20*k, 19*k, 4*k, 19*k, c, 2*k)
 end
 
 D["file"] = function(p, s, c)
     local k = s / 24
-    ln(p, 6*k, 3*k, 14*k, 3*k, c, SW*k)
-    ln(p, 14*k, 3*k, 20*k, 9*k, c, SW*k)
-    ln(p, 20*k, 9*k, 20*k, 21*k, c, SW*k)
-    ln(p, 20*k, 21*k, 6*k, 21*k, c, SW*k)
-    ln(p, 6*k, 21*k, 6*k, 3*k, c, SW*k)
-    ln(p, 14*k, 3*k, 14*k, 9*k, c, SW*k)
-    ln(p, 14*k, 9*k, 20*k, 9*k, c, SW*k)
+    ln(p, 6*k, 20*k, 6*k, 4*k, c, 2*k)
+    ln(p, 6*k, 4*k, 14*k, 4*k, c, 2*k)
+    ln(p, 14*k, 4*k, 20*k, 10*k, c, 2*k)
+    ln(p, 20*k, 10*k, 20*k, 20*k, c, 2*k)
+    ln(p, 20*k, 20*k, 6*k, 20*k, c, 2*k)
 end
 
 D["copy"] = function(p, s, c)
     local k = s / 24
-    rect(p, 8*k, 8*k, 13*k, 13*k, 2*k, c)
-    rect(p, 3*k, 3*k, 13*k, 13*k, 2*k, c)
+    rect(p, 8*k, 8*k, 12*k, 12*k, 1.5*k, c)
+    rect(p, 4*k, 4*k, 12*k, 12*k, 1.5*k, c)
 end
 
 D["trash"] = function(p, s, c)
     local k = s / 24
-    ln(p, 3*k, 6*k, 21*k, 6*k, c, SW*k)
-    ln(p, 8*k, 6*k, 8*k, 3*k, c, SW*k)
-    ln(p, 8*k, 3*k, 16*k, 3*k, c, SW*k)
-    ln(p, 16*k, 3*k, 16*k, 6*k, c, SW*k)
-    ln(p, 5*k, 6*k, 6*k, 21*k, c, SW*k)
-    ln(p, 6*k, 21*k, 18*k, 21*k, c, SW*k)
-    ln(p, 18*k, 21*k, 19*k, 6*k, c, SW*k)
+    ln(p, 4*k, 7*k, 20*k, 7*k, c, 2*k)
+    ln(p, 9*k, 7*k, 9*k, 4*k, c, 2*k)
+    ln(p, 9*k, 4*k, 15*k, 4*k, c, 2*k)
+    ln(p, 15*k, 4*k, 15*k, 7*k, c, 2*k)
+    ln(p, 6*k, 7*k, 7*k, 20*k, c, 2*k)
+    ln(p, 7*k, 20*k, 17*k, 20*k, c, 2*k)
+    ln(p, 17*k, 20*k, 18*k, 7*k, c, 2*k)
 end
 D["delete"] = D["trash"]
 
 D["edit"] = function(p, s, c)
     local k = s / 24
-    ln(p, 4*k, 20*k, 6*k, 18*k, c, SW*k)
-    ln(p, 6*k, 18*k, 17*k, 7*k, c, SW*k)
-    ln(p, 17*k, 7*k, 20*k, 10*k, c, SW*k)
-    ln(p, 20*k, 10*k, 9*k, 21*k, c, SW*k)
-    ln(p, 9*k, 21*k, 4*k, 20*k, c, SW*k)
+    ln(p, 4*k, 20*k, 7*k, 17*k, c, 2*k)
+    ln(p, 7*k, 17*k, 17*k, 7*k, c, 2*k)
+    ln(p, 17*k, 7*k, 20*k, 10*k, c, 2*k)
+    ln(p, 20*k, 10*k, 10*k, 20*k, c, 2*k)
+    ln(p, 10*k, 20*k, 4*k, 20*k, c, 2*k)
 end
 
 D["download"] = function(p, s, c)
     local k = s / 24
-    ln(p, 12*k, 3*k, 12*k, 15*k, c, SW*k)
-    ln(p, 7*k, 10*k, 12*k, 15*k, c, SW*k)
-    ln(p, 17*k, 10*k, 12*k, 15*k, c, SW*k)
-    ln(p, 3*k, 20*k, 21*k, 20*k, c, SW*k)
+    ln(p, 12*k, 4*k, 12*k, 15*k, c, 2*k)
+    ln(p, 7*k, 10*k, 12*k, 15*k, c, 2*k)
+    ln(p, 17*k, 10*k, 12*k, 15*k, c, 2*k)
+    ln(p, 4*k, 20*k, 20*k, 20*k, c, 2*k)
 end
 
 D["upload"] = function(p, s, c)
     local k = s / 24
-    ln(p, 12*k, 21*k, 12*k, 9*k, c, SW*k)
-    ln(p, 7*k, 14*k, 12*k, 9*k, c, SW*k)
-    ln(p, 17*k, 14*k, 12*k, 9*k, c, SW*k)
-    ln(p, 3*k, 4*k, 21*k, 4*k, c, SW*k)
+    ln(p, 12*k, 20*k, 12*k, 9*k, c, 2*k)
+    ln(p, 7*k, 14*k, 12*k, 9*k, c, 2*k)
+    ln(p, 17*k, 14*k, 12*k, 9*k, c, 2*k)
+    ln(p, 4*k, 4*k, 20*k, 4*k, c, 2*k)
 end
 
 D["filter"] = function(p, s, c)
     local k = s / 24
-    ln(p, 3*k, 4*k, 21*k, 4*k, c, SW*k)
-    ln(p, 6*k, 10*k, 18*k, 10*k, c, SW*k)
-    ln(p, 9*k, 16*k, 15*k, 16*k, c, SW*k)
+    ln(p, 4*k, 5*k, 20*k, 5*k, c, 2*k)
+    ln(p, 7*k, 11*k, 17*k, 11*k, c, 2*k)
+    ln(p, 10*k, 17*k, 14*k, 17*k, c, 2*k)
 end
 
 D["crown"] = function(p, s, c)
     local k = s / 24
-    ln(p, 4*k, 20*k, 4*k, 10*k, c, SW*k)
-    ln(p, 4*k, 10*k, 8*k, 14*k, c, SW*k)
-    ln(p, 8*k, 14*k, 12*k, 6*k, c, SW*k)
-    ln(p, 12*k, 6*k, 16*k, 14*k, c, SW*k)
-    ln(p, 16*k, 14*k, 20*k, 10*k, c, SW*k)
-    ln(p, 20*k, 10*k, 20*k, 20*k, c, SW*k)
-    ln(p, 4*k, 20*k, 20*k, 20*k, c, SW*k)
+    ln(p, 5*k, 19*k, 5*k, 9*k, c, 2*k)
+    ln(p, 5*k, 9*k, 9*k, 14*k, c, 2*k)
+    ln(p, 9*k, 14*k, 12*k, 6*k, c, 2*k)
+    ln(p, 12*k, 6*k, 15*k, 14*k, c, 2*k)
+    ln(p, 15*k, 14*k, 19*k, 9*k, c, 2*k)
+    ln(p, 19*k, 9*k, 19*k, 19*k, c, 2*k)
+    ln(p, 5*k, 19*k, 19*k, 19*k, c, 2*k)
 end
 D["vip"] = D["crown"]
 
 D["diamond"] = function(p, s, c)
     local k = s / 24
-    ln(p, 6*k, 3*k, 18*k, 3*k, c, SW*k)
-    ln(p, 18*k, 3*k, 22*k, 10*k, c, SW*k)
-    ln(p, 22*k, 10*k, 12*k, 21*k, c, SW*k)
-    ln(p, 12*k, 21*k, 2*k, 10*k, c, SW*k)
-    ln(p, 2*k, 10*k, 6*k, 3*k, c, SW*k)
+    ln(p, 6*k, 4*k, 18*k, 4*k, c, 2*k)
+    ln(p, 18*k, 4*k, 22*k, 11*k, c, 2*k)
+    ln(p, 22*k, 11*k, 12*k, 21*k, c, 2*k)
+    ln(p, 12*k, 21*k, 2*k, 11*k, c, 2*k)
+    ln(p, 2*k, 11*k, 6*k, 4*k, c, 2*k)
 end
 D["gem"] = D["diamond"]
 
 D["fire"] = function(p, s, c)
     local k = s / 24
-    ln(p, 12*k, 22*k, 6*k, 16*k, c, SW*k)
-    ln(p, 6*k, 16*k, 4*k, 12*k, c, SW*k)
-    ln(p, 4*k, 12*k, 6*k, 6*k, c, SW*k)
-    ln(p, 6*k, 6*k, 10*k, 2*k, c, SW*k)
-    ln(p, 10*k, 2*k, 12*k, 8*k, c, SW*k)
-    ln(p, 12*k, 8*k, 15*k, 5*k, c, SW*k)
-    ln(p, 15*k, 5*k, 18*k, 10*k, c, SW*k)
-    ln(p, 18*k, 10*k, 20*k, 16*k, c, SW*k)
-    ln(p, 20*k, 16*k, 14*k, 22*k, c, SW*k)
-    ln(p, 14*k, 22*k, 12*k, 22*k, c, SW*k)
+    ln(p, 12*k, 21*k, 6*k, 15*k, c, 2*k)
+    ln(p, 6*k, 15*k, 5*k, 11*k, c, 2*k)
+    ln(p, 5*k, 11*k, 8*k, 5*k, c, 2*k)
+    ln(p, 8*k, 5*k, 11*k, 3*k, c, 2*k)
+    ln(p, 11*k, 3*k, 13*k, 8*k, c, 2*k)
+    ln(p, 13*k, 8*k, 16*k, 5*k, c, 2*k)
+    ln(p, 16*k, 5*k, 19*k, 11*k, c, 2*k)
+    ln(p, 19*k, 11*k, 18*k, 15*k, c, 2*k)
+    ln(p, 18*k, 15*k, 12*k, 21*k, c, 2*k)
 end
 D["flame"] = D["fire"]
 
 D["globe"] = function(p, s, c)
     local k = s / 24
     circ(p, 12*k, 12*k, 9*k, c, false)
-    ln(p, 3*k, 12*k, 21*k, 12*k, c, SW*k)
-    ln(p, 12*k, 3*k, 12*k, 21*k, c, SW*k)
-    ln(p, 5*k, 6*k, 19*k, 6*k, c, SW*k)
-    ln(p, 5*k, 18*k, 19*k, 18*k, c, SW*k)
+    ln(p, 3*k, 12*k, 21*k, 12*k, c, 1.8*k)
+    ln(p, 12*k, 3*k, 12*k, 21*k, c, 1.8*k)
 end
 
 D["play"] = function(p, s, c)
     local k = s / 24
-    ln(p, 7*k, 5*k, 19*k, 12*k, c, SW*k)
-    ln(p, 19*k, 12*k, 7*k, 19*k, c, SW*k)
-    ln(p, 7*k, 19*k, 7*k, 5*k, c, SW*k)
+    ln(p, 8*k, 5*k, 19*k, 12*k, c, 2*k)
+    ln(p, 19*k, 12*k, 8*k, 19*k, c, 2*k)
+    ln(p, 8*k, 19*k, 8*k, 5*k, c, 2*k)
 end
 
 D["pause"] = function(p, s, c)
     local k = s / 24
-    ln(p, 8*k, 5*k, 8*k, 19*k, c, SW*k)
-    ln(p, 16*k, 5*k, 16*k, 19*k, c, SW*k)
-end
-
-D["stop"] = function(p, s, c)
-    local k = s / 24
-    rect(p, 6*k, 6*k, 12*k, 12*k, 1*k, c)
+    ln(p, 8*k, 5*k, 8*k, 19*k, c, 2.5*k)
+    ln(p, 16*k, 5*k, 16*k, 19*k, c, 2.5*k)
 end
 
 D["crosshair"] = function(p, s, c)
     local k = s / 24
-    circ(p, 12*k, 12*k, 9*k, c, false)
-    ln(p, 12*k, 3*k, 12*k, 8*k, c, SW*k)
-    ln(p, 12*k, 16*k, 12*k, 21*k, c, SW*k)
-    ln(p, 3*k, 12*k, 8*k, 12*k, c, SW*k)
-    ln(p, 16*k, 12*k, 21*k, 12*k, c, SW*k)
-    circ(p, 12*k, 12*k, 1*k, c, true)
+    circ(p, 12*k, 12*k, 8*k, c, false)
+    ln(p, 12*k, 3*k, 12*k, 8*k, c, 2*k)
+    ln(p, 12*k, 16*k, 12*k, 21*k, c, 2*k)
+    ln(p, 3*k, 12*k, 8*k, 12*k, c, 2*k)
+    ln(p, 16*k, 12*k, 21*k, 12*k, c, 2*k)
+    circ(p, 12*k, 12*k, 1.2*k, c, true)
 end
 D["target"] = D["crosshair"]; D["aim"] = D["crosshair"]
 
 D["pin"] = function(p, s, c)
     local k = s / 24
-    ln(p, 12*k, 21*k, 6*k, 15*k, c, SW*k)
-    ln(p, 6*k, 15*k, 4*k, 10*k, c, SW*k)
-    ln(p, 4*k, 10*k, 6*k, 6*k, c, SW*k)
-    ln(p, 6*k, 6*k, 10*k, 4*k, c, SW*k)
-    ln(p, 10*k, 4*k, 14*k, 4*k, c, SW*k)
-    ln(p, 14*k, 4*k, 18*k, 6*k, c, SW*k)
-    ln(p, 18*k, 6*k, 20*k, 10*k, c, SW*k)
-    ln(p, 20*k, 10*k, 18*k, 15*k, c, SW*k)
-    ln(p, 18*k, 15*k, 12*k, 21*k, c, SW*k)
-    circ(p, 12*k, 10*k, 3*k, c, false)
+    circ(p, 12*k, 9*k, 6*k, c, false)
+    ln(p, 9*k, 14*k, 12*k, 21*k, c, 2*k)
+    ln(p, 15*k, 14*k, 12*k, 21*k, c, 2*k)
+    circ(p, 12*k, 9*k, 2*k, c, true)
 end
 D["location"] = D["pin"]; D["map"] = D["pin"]
 
 D["discord"] = function(p, s, c)
     local k = s / 24
-    ln(p, 8*k, 6*k, 12*k, 5*k, c, SW*k)
-    ln(p, 12*k, 5*k, 16*k, 6*k, c, SW*k)
-    ln(p, 6*k, 9*k, 8*k, 6*k, c, SW*k)
-    ln(p, 16*k, 6*k, 18*k, 9*k, c, SW*k)
-    ln(p, 18*k, 9*k, 19*k, 14*k, c, SW*k)
-    ln(p, 19*k, 14*k, 17*k, 18*k, c, SW*k)
-    ln(p, 17*k, 18*k, 15*k, 19*k, c, SW*k)
-    ln(p, 15*k, 19*k, 13*k, 17*k, c, SW*k)
-    ln(p, 13*k, 17*k, 11*k, 17*k, c, SW*k)
-    ln(p, 11*k, 17*k, 9*k, 19*k, c, SW*k)
-    ln(p, 9*k, 19*k, 7*k, 18*k, c, SW*k)
-    ln(p, 7*k, 18*k, 5*k, 14*k, c, SW*k)
-    ln(p, 5*k, 14*k, 6*k, 9*k, c, SW*k)
-    circ(p, 9*k, 13*k, 1*k, c, true)
-    circ(p, 15*k, 13*k, 1*k, c, true)
+    rect(p, 4*k, 6*k, 16*k, 12*k, 6*k, c, false)
+    circ(p, 9*k, 12*k, 1.4*k, c, true)
+    circ(p, 15*k, 12*k, 1.4*k, c, true)
 end
 
 D["sword"] = function(p, s, c)
     local k = s / 24
-    ln(p, 4*k, 20*k, 9*k, 15*k, c, SW*k)
-    ln(p, 9*k, 15*k, 20*k, 4*k, c, SW*k)
-    ln(p, 20*k, 4*k, 20*k, 8*k, c, SW*k)
-    ln(p, 20*k, 8*k, 16*k, 12*k, c, SW*k)
-    ln(p, 16*k, 12*k, 9*k, 15*k, c, SW*k)
-    ln(p, 5*k, 14*k, 10*k, 19*k, c, SW*k)
+    ln(p, 5*k, 19*k, 10*k, 14*k, c, 2*k)
+    ln(p, 10*k, 14*k, 19*k, 5*k, c, 2*k)
+    ln(p, 19*k, 5*k, 19*k, 9*k, c, 2*k)
+    ln(p, 19*k, 9*k, 15*k, 13*k, c, 2*k)
+    ln(p, 15*k, 13*k, 10*k, 14*k, c, 2*k)
+    ln(p, 6*k, 15*k, 9*k, 18*k, c, 2*k)
 end
 D["combat"] = D["sword"]
 
--- ── Public icon factory ──
+D["cpu"] = function(p, s, c)
+    local k = s / 24
+    rect(p, 6*k, 6*k, 12*k, 12*k, 1.5*k, c)
+    rect(p, 9*k, 9*k, 6*k, 6*k, 1*k, c, true)
+    ln(p, 9*k, 3*k, 9*k, 6*k, c, 1.8*k)
+    ln(p, 15*k, 3*k, 15*k, 6*k, c, 1.8*k)
+    ln(p, 9*k, 18*k, 9*k, 21*k, c, 1.8*k)
+    ln(p, 15*k, 18*k, 15*k, 21*k, c, 1.8*k)
+    ln(p, 3*k, 9*k, 6*k, 9*k, c, 1.8*k)
+    ln(p, 3*k, 15*k, 6*k, 15*k, c, 1.8*k)
+    ln(p, 18*k, 9*k, 21*k, 9*k, c, 1.8*k)
+    ln(p, 18*k, 15*k, 21*k, 15*k, c, 1.8*k)
+end
+D["chip"] = D["cpu"]
+
+D["terminal"] = function(p, s, c)
+    local k = s / 24
+    rect(p, 3*k, 4*k, 18*k, 16*k, 1.5*k, c)
+    ln(p, 7*k, 10*k, 11*k, 13*k, c, 2*k)
+    ln(p, 11*k, 13*k, 7*k, 16*k, c, 2*k)
+    ln(p, 13*k, 16*k, 18*k, 16*k, c, 2*k)
+end
+
 function Icon.Create(parent, icon, size, color)
     size  = size or 18
     color = color or Theme.Text
@@ -752,7 +664,6 @@ function Icon.Create(parent, icon, size, color)
         Parent = parent,
     })
 
-    -- Layer 1: asset ID
     if type(icon) == "number" then
         mk("ImageLabel", {
             Size = UDim2.new(1, 0, 1, 0),
@@ -763,6 +674,7 @@ function Icon.Create(parent, icon, size, color)
         })
         return box
     end
+
     if type(icon) == "string" and (icon:match("^rbxassetid://") or icon:match("^rbxasset://") or icon:match("^http")) then
         mk("ImageLabel", {
             Size = UDim2.new(1, 0, 1, 0),
@@ -774,14 +686,11 @@ function Icon.Create(parent, icon, size, color)
         return box
     end
 
-    -- Layer 2: drawn
     local n = tostring(icon or "star"):lower()
     if D[n] then
-        local ok = pcall(D[n], box, size, color)
-        if ok then return box end
+        pcall(D[n], box, size, color)
+        return box
     end
-
-    -- Layer 3: fallback
     pcall(D["star"], box, size, color)
     return box
 end
@@ -793,9 +702,7 @@ AvenUI.IconNames = (function()
     return t
 end)()
 
--- ═══════════════════════════════════════════════════════════
---  NOTIFICATIONS
--- ═══════════════════════════════════════════════════════════
+-- ═══ NOTIFICATION ═══
 local notifHolder
 
 local function ensureNotif()
@@ -916,9 +823,7 @@ function AvenUI:Notify(o)
     end)
 end
 
--- ═══════════════════════════════════════════════════════════
---  WINDOW
--- ═══════════════════════════════════════════════════════════
+-- ═══ WINDOW ═══
 function AvenUI:CreateWindow(o)
     o = o or {}
     local title     = o.Name or "AvenUI"
@@ -956,7 +861,7 @@ function AvenUI:CreateWindow(o)
     st(main, Theme.Border, 1)
     self.Main = main
 
-    local shadow = mk("ImageLabel", {
+    mk("ImageLabel", {
         AnchorPoint = Vector2.new(0.5, 0.5),
         Position = UDim2.new(0.5, 0, 0.5, 6),
         Size = UDim2.new(1, 50, 1, 50),
@@ -1046,24 +951,6 @@ function AvenUI:CreateWindow(o)
         })
     end
 
-    local clock = mk("TextLabel", {
-        Size = UDim2.new(0, 60, 0, 14),
-        Position = UDim2.new(1, -150, 0.5, 8),
-        BackgroundTransparency = 1,
-        Font = Theme.FontMed,
-        Text = os.date("%H:%M"),
-        TextColor3 = Theme.Muted,
-        TextSize = 10,
-        TextXAlignment = Enum.TextXAlignment.Right,
-        Parent = top,
-    })
-    task.spawn(function()
-        while clock.Parent do
-            clock.Text = os.date("%H:%M")
-            task.wait(30)
-        end
-    end)
-
     local minBtn = mk("TextButton", {
         Size = UDim2.new(0, 30, 0, 30),
         Position = UDim2.new(1, -74, 0.5, -15),
@@ -1094,15 +981,9 @@ function AvenUI:CreateWindow(o)
 
     closeBtn.MouseEnter:Connect(function()
         tw(closeBtn, 0.15, { BackgroundColor3 = Theme.Danger })
-        for _, c in ipairs(closeHolder:GetChildren()) do c:Destroy() end
-        local x = Icon.Create(closeHolder, "close", 12, Color3.new(1, 1, 1))
-        x.AnchorPoint = Vector2.new(0.5, 0.5); x.Position = UDim2.new(0.5, 0, 0.5, 0)
     end)
     closeBtn.MouseLeave:Connect(function()
         tw(closeBtn, 0.15, { BackgroundColor3 = Theme.Item })
-        for _, c in ipairs(closeHolder:GetChildren()) do c:Destroy() end
-        local x = Icon.Create(closeHolder, "close", 12, Theme.SubText)
-        x.AnchorPoint = Vector2.new(0.5, 0.5); x.Position = UDim2.new(0.5, 0, 0.5, 0)
     end)
     minBtn.MouseEnter:Connect(function() tw(minBtn, 0.15, { BackgroundColor3 = Theme.ItemHover }) end)
     minBtn.MouseLeave:Connect(function() tw(minBtn, 0.15, { BackgroundColor3 = Theme.Item }) end)
@@ -1209,20 +1090,18 @@ function AvenUI:CreateWindow(o)
     self.SetTitle = function(t) titleLbl.Text = t end
     self.SetSubtitle = function(t) if subLbl then subLbl.Text = t end end
 
-    -- Config save/load
     self.SaveConfig = function()
         if not hasFileAPI() then return false end
         local data = { flags = {}, theme = {} }
         for k, v in pairs(self.Flags) do
-            if v.type == "toggle" then data.flags[k] = v.value
-            elseif v.type == "slider" then data.flags[k] = v.value
+            if v.type == "toggle" or v.type == "slider" then
+                data.flags[k] = v.value
             end
         end
         data.theme.Accent = { Theme.Accent.R, Theme.Accent.G, Theme.Accent.B }
-        local ok = pcall(function()
+        return pcall(function()
             writefile(FOLDER .. "/config.json", HttpService:JSONEncode(data))
         end)
-        return ok
     end
 
     self.LoadConfig = function()
@@ -1236,7 +1115,9 @@ function AvenUI:CreateWindow(o)
         if data.flags then
             for k, v in pairs(data.flags) do
                 local f = self.Flags[k]
-                if f and f.set then f.set(v) end
+                if f and type(f.set) == "function" then
+                    pcall(f.set, v)
+                end
             end
         end
         return true
@@ -1249,9 +1130,7 @@ function AvenUI:CreateWindow(o)
         end
     end)
 
-    -- ═══════════════════════════════════════════════════════
-    --  TAB
-    -- ═══════════════════════════════════════════════════════
+    -- ═══ TAB CREATION (with error isolation) ═══
     function self:CreateTab(name, ic)
         local tab = {}
         tab.Name = name
@@ -1345,22 +1224,22 @@ function AvenUI:CreateWindow(o)
         table.insert(self.Tabs, tab)
         if #self.Tabs == 1 then task.defer(select) end
 
-        -- ═══ SECTION ═══
-        function tab:Section(txt, ic)
+        -- Section
+        function tab:Section(txt, sic)
             local wrap = mk("Frame", {
                 Size = UDim2.new(1, -8, 0, 24),
                 BackgroundTransparency = 1,
                 Parent = container,
             })
             local startX = 0
-            if ic then
+            if sic then
                 local h = mk("Frame", {
                     Size = UDim2.new(0, 14, 0, 14),
                     Position = UDim2.new(0, 2, 0.5, -7),
                     BackgroundTransparency = 1,
                     Parent = wrap,
                 })
-                Icon.Create(h, ic, 14, Theme.Accent)
+                Icon.Create(h, sic, 14, Theme.Accent)
                 startX = 22
             else
                 mk("Frame", {
@@ -1385,11 +1264,11 @@ function AvenUI:CreateWindow(o)
             })
         end
 
-        -- ═══ TOGGLE ═══
-        function tab:Toggle(o)
-            o = o or {}
-            local state = o.CurrentValue or false
-            local flag = o.Flag
+        -- Toggle
+        function tab:Toggle(opt)
+            opt = opt or {}
+            local state = opt.CurrentValue or false
+            local flag = opt.Flag
 
             local row = mk("TextButton", {
                 Size = UDim2.new(1, -8, 0, 40),
@@ -1403,14 +1282,14 @@ function AvenUI:CreateWindow(o)
             local rowStroke = st(row, Theme.BorderSoft, 1)
 
             local tx = 14
-            if o.Icon then
+            if opt.Icon then
                 local h = mk("Frame", {
                     Size = UDim2.new(0, 16, 0, 16),
                     Position = UDim2.new(0, 14, 0.5, -8),
                     BackgroundTransparency = 1,
                     Parent = row,
                 })
-                Icon.Create(h, o.Icon, 16, Theme.SubText)
+                Icon.Create(h, opt.Icon, 16, Theme.SubText)
                 tx = 40
             end
 
@@ -1419,7 +1298,7 @@ function AvenUI:CreateWindow(o)
                 Position = UDim2.new(0, tx, 0, 0),
                 BackgroundTransparency = 1,
                 Font = Theme.FontMed,
-                Text = o.Name or "Toggle",
+                Text = opt.Name or "Toggle",
                 TextColor3 = Theme.Text,
                 TextSize = 12,
                 TextXAlignment = Enum.TextXAlignment.Left,
@@ -1456,6 +1335,22 @@ function AvenUI:CreateWindow(o)
                 end
             end
 
+            local api = {
+                Set = function(v)
+                    state = v; render()
+                    task.spawn(opt.Callback or function() end, v)
+                end,
+                Get = function() return state end,
+            }
+
+            -- Register flag FIRST
+            if flag then
+                self.Flags[flag] = self.Flags[flag] or {}
+                self.Flags[flag].type = "toggle"
+                self.Flags[flag].value = state
+                self.Flags[flag].set = api.Set
+            end
+
             row.MouseEnter:Connect(function()
                 if not state then tw(row, 0.15, { BackgroundColor3 = Theme.ItemHover }) end
             end)
@@ -1465,27 +1360,23 @@ function AvenUI:CreateWindow(o)
             row.MouseButton1Click:Connect(function()
                 state = not state
                 render()
-                task.spawn(o.Callback or function() end, state)
+                if flag and self.Flags[flag] then self.Flags[flag].value = state end
+                task.spawn(opt.Callback or function() end, state)
             end)
             render()
 
-            local api = {
-                Set = function(v) state = v; render(); task.spawn(o.Callback or function() end, v) end,
-                Get = function() return state end,
-            }
-            if flag then self.Flags[flag] = { type = "toggle", value = state, set = api.Set } end
             return api
         end
 
-        -- ═══ SLIDER ═══
-        function tab:Slider(o)
-            o = o or {}
-            local mn = (o.Range and o.Range[1]) or 0
-            local mx = (o.Range and o.Range[2]) or 100
-            local inc = o.Increment or 1
-            local val = o.CurrentValue or mn
-            local sfx = o.Suffix or ""
-            local flag = o.Flag
+        -- Slider
+        function tab:Slider(opt)
+            opt = opt or {}
+            local mn = (opt.Range and opt.Range[1]) or 0
+            local mx = (opt.Range and opt.Range[2]) or 100
+            local inc = opt.Increment or 1
+            local val = opt.CurrentValue or mn
+            local sfx = opt.Suffix or ""
+            local flag = opt.Flag
 
             local row = mk("Frame", {
                 Size = UDim2.new(1, -8, 0, 54),
@@ -1497,14 +1388,14 @@ function AvenUI:CreateWindow(o)
             st(row, Theme.BorderSoft, 1)
 
             local tx = 14
-            if o.Icon then
+            if opt.Icon then
                 local h = mk("Frame", {
                     Size = UDim2.new(0, 16, 0, 16),
                     Position = UDim2.new(0, 14, 0, 11),
                     BackgroundTransparency = 1,
                     Parent = row,
                 })
-                Icon.Create(h, o.Icon, 16, Theme.SubText)
+                Icon.Create(h, opt.Icon, 16, Theme.SubText)
                 tx = 40
             end
 
@@ -1513,7 +1404,7 @@ function AvenUI:CreateWindow(o)
                 Position = UDim2.new(0, tx, 0, 8),
                 BackgroundTransparency = 1,
                 Font = Theme.FontMed,
-                Text = o.Name or "Slider",
+                Text = opt.Name or "Slider",
                 TextColor3 = Theme.Text,
                 TextSize = 12,
                 TextXAlignment = Enum.TextXAlignment.Left,
@@ -1565,6 +1456,27 @@ function AvenUI:CreateWindow(o)
             cr(knob, 100)
             mk("UIStroke", { Color = Theme.Accent, Thickness = 2, Parent = knob })
 
+            local api = {
+                Set = function(v)
+                    v = math.clamp(tonumber(v) or mn, mn, mx)
+                    val = v
+                    local rel = (val - mn) / (mx - mn)
+                    fill.Size = UDim2.new(rel, 0, 1, 0)
+                    knob.Position = UDim2.new(rel, -7, 0.5, -7)
+                    valLbl.Text = tostring(val) .. sfx
+                    task.spawn(opt.Callback or function() end, val)
+                end,
+                Get = function() return val end,
+            }
+
+            -- Register flag FIRST
+            if flag then
+                self.Flags[flag] = self.Flags[flag] or {}
+                self.Flags[flag].type = "slider"
+                self.Flags[flag].value = val
+                self.Flags[flag].set = api.Set
+            end
+
             local dragging = false
             track.InputBegan:Connect(function(i)
                 if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
@@ -1593,28 +1505,17 @@ function AvenUI:CreateWindow(o)
                 fill.Size = UDim2.new(rel, 0, 1, 0)
                 knob.Position = UDim2.new(rel, -9, 0.5, -9)
                 valLbl.Text = tostring(val) .. sfx
-                task.spawn(o.Callback or function() end, val)
+                if flag and self.Flags[flag] then self.Flags[flag].value = val end
+                task.spawn(opt.Callback or function() end, val)
             end)
 
-            local api = {
-                Set = function(v)
-                    val = math.clamp(v, mn, mx)
-                    local rel = (val - mn) / (mx - mn)
-                    fill.Size = UDim2.new(rel, 0, 1, 0)
-                    knob.Position = UDim2.new(rel, -7, 0.5, -7)
-                    valLbl.Text = tostring(val) .. sfx
-                    task.spawn(o.Callback or function() end, val)
-                end,
-                Get = function() return val end,
-            }
-            if flag then self.Flags[flag] = { type = "slider", value = val, set = api.Set } end
             return api
         end
 
-        -- ═══ BUTTON ═══
-        function tab:Button(o)
-            o = o or {}
-            local danger = o.Danger or false
+        -- Button
+        function tab:Button(opt)
+            opt = opt or {}
+            local danger = opt.Danger or false
             local bg = danger and Theme.Danger or Theme.Accent
             local txtCol = danger and Color3.new(1, 1, 1) or Theme.AccentText
 
@@ -1629,14 +1530,14 @@ function AvenUI:CreateWindow(o)
             cr(row, Theme.RadiusSm)
 
             local tx = 0
-            if o.Icon then
+            if opt.Icon then
                 local h = mk("Frame", {
                     Size = UDim2.new(0, 16, 0, 16),
                     Position = UDim2.new(0, 14, 0.5, -8),
                     BackgroundTransparency = 1,
                     Parent = row,
                 })
-                Icon.Create(h, o.Icon, 16, txtCol)
+                Icon.Create(h, opt.Icon, 16, txtCol)
                 tx = 38
             end
 
@@ -1645,7 +1546,7 @@ function AvenUI:CreateWindow(o)
                 Position = UDim2.new(0, tx, 0, 0),
                 BackgroundTransparency = 1,
                 Font = Theme.FontBold,
-                Text = o.Name or "Button",
+                Text = opt.Name or "Button",
                 TextColor3 = txtCol,
                 TextSize = 12,
                 Parent = row,
@@ -1658,13 +1559,13 @@ function AvenUI:CreateWindow(o)
                 tw(row, 0.15, { BackgroundColor3 = bg })
             end)
             row.MouseButton1Click:Connect(function()
-                task.spawn(o.Callback or function() end)
+                task.spawn(opt.Callback or function() end)
             end)
         end
 
-        -- ═══ INPUT ═══
-        function tab:Input(o)
-            o = o or {}
+        -- Input
+        function tab:Input(opt)
+            opt = opt or {}
             local row = mk("Frame", {
                 Size = UDim2.new(1, -8, 0, 56),
                 BackgroundColor3 = Theme.Item,
@@ -1675,14 +1576,14 @@ function AvenUI:CreateWindow(o)
             st(row, Theme.BorderSoft, 1)
 
             local tx = 14
-            if o.Icon then
+            if opt.Icon then
                 local h = mk("Frame", {
                     Size = UDim2.new(0, 16, 0, 16),
                     Position = UDim2.new(0, 14, 0, 11),
                     BackgroundTransparency = 1,
                     Parent = row,
                 })
-                Icon.Create(h, o.Icon, 16, Theme.SubText)
+                Icon.Create(h, opt.Icon, 16, Theme.SubText)
                 tx = 40
             end
 
@@ -1691,7 +1592,7 @@ function AvenUI:CreateWindow(o)
                 Position = UDim2.new(0, tx, 0, 8),
                 BackgroundTransparency = 1,
                 Font = Theme.FontMed,
-                Text = o.Name or "Input",
+                Text = opt.Name or "Input",
                 TextColor3 = Theme.Text,
                 TextSize = 12,
                 TextXAlignment = Enum.TextXAlignment.Left,
@@ -1713,8 +1614,8 @@ function AvenUI:CreateWindow(o)
                 Position = UDim2.new(0, 10, 0, 0),
                 BackgroundTransparency = 1,
                 Font = Theme.Font,
-                Text = o.CurrentValue or "",
-                PlaceholderText = o.Placeholder or "Type here...",
+                Text = opt.CurrentValue or "",
+                PlaceholderText = opt.Placeholder or "Type here...",
                 TextColor3 = Theme.Text,
                 PlaceholderColor3 = Theme.Muted,
                 TextSize = 11,
@@ -1725,7 +1626,7 @@ function AvenUI:CreateWindow(o)
 
             box.FocusLost:Connect(function()
                 tw(bStroke, 0.2, { Color = Theme.BorderSoft })
-                task.spawn(o.Callback or function() end, box.Text)
+                task.spawn(opt.Callback or function() end, box.Text)
             end)
             box.Focused:Connect(function()
                 tw(bStroke, 0.2, { Color = Theme.BorderFocus })
@@ -1737,11 +1638,11 @@ function AvenUI:CreateWindow(o)
             }
         end
 
-        -- ═══ DROPDOWN ═══
-        function tab:Dropdown(o)
-            o = o or {}
-            local opts = o.Options or {}
-            local cur = o.CurrentOption or (opts[1] or "")
+        -- Dropdown
+        function tab:Dropdown(opt)
+            opt = opt or {}
+            local opts = opt.Options or {}
+            local cur = opt.CurrentOption or (opts[1] or "")
 
             local wrap = mk("Frame", {
                 Size = UDim2.new(1, -8, 0, 38),
@@ -1762,14 +1663,14 @@ function AvenUI:CreateWindow(o)
             st(row, Theme.BorderSoft, 1)
 
             local tx = 14
-            if o.Icon then
+            if opt.Icon then
                 local h = mk("Frame", {
                     Size = UDim2.new(0, 16, 0, 16),
                     Position = UDim2.new(0, 14, 0.5, -8),
                     BackgroundTransparency = 1,
                     Parent = row,
                 })
-                Icon.Create(h, o.Icon, 16, Theme.SubText)
+                Icon.Create(h, opt.Icon, 16, Theme.SubText)
                 tx = 40
             end
 
@@ -1778,7 +1679,7 @@ function AvenUI:CreateWindow(o)
                 Position = UDim2.new(0, tx, 0, 0),
                 BackgroundTransparency = 1,
                 Font = Theme.FontMed,
-                Text = o.Name or "Dropdown",
+                Text = opt.Name or "Dropdown",
                 TextColor3 = Theme.Text,
                 TextSize = 12,
                 TextXAlignment = Enum.TextXAlignment.Left,
@@ -1803,7 +1704,7 @@ function AvenUI:CreateWindow(o)
                 BackgroundTransparency = 1,
                 Parent = row,
             })
-            local ci = Icon.Create(chev, "chevron-down", 11, Theme.SubText)
+            Icon.Create(chev, "chevron-down", 11, Theme.SubText)
 
             local list = mk("Frame", {
                 Size = UDim2.new(1, 0, 0, 0),
@@ -1818,13 +1719,13 @@ function AvenUI:CreateWindow(o)
             mk("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 2), Parent = list })
             pd(list, 4)
 
-            for _, opt in ipairs(opts) do
+            for _, o in ipairs(opts) do
                 local ob = mk("TextButton", {
                     Size = UDim2.new(1, -8, 0, 28),
                     BackgroundColor3 = Theme.Item,
                     BorderSizePixel = 0,
                     Font = Theme.Font,
-                    Text = tostring(opt),
+                    Text = tostring(o),
                     TextColor3 = Theme.Text,
                     TextSize = 11,
                     AutoButtonColor = false,
@@ -1834,14 +1735,14 @@ function AvenUI:CreateWindow(o)
                 ob.MouseEnter:Connect(function() tw(ob, 0.1, { BackgroundColor3 = Theme.ItemHover }) end)
                 ob.MouseLeave:Connect(function() tw(ob, 0.1, { BackgroundColor3 = Theme.Item }) end)
                 ob.MouseButton1Click:Connect(function()
-                    cur = opt
-                    valLbl.Text = tostring(opt)
+                    cur = o
+                    valLbl.Text = tostring(o)
                     list.Visible = false
                     list.Size = UDim2.new(1, 0, 0, 0)
                     for _, c in ipairs(chev:GetChildren()) do c:Destroy() end
                     local d = Icon.Create(chev, "chevron-down", 11, Theme.SubText)
                     d.AnchorPoint = Vector2.new(0.5, 0.5); d.Position = UDim2.new(0.5, 0, 0.5, 0)
-                    task.spawn(o.Callback or function() end, opt)
+                    task.spawn(opt.Callback or function() end, o)
                 end)
             end
 
@@ -1862,10 +1763,10 @@ function AvenUI:CreateWindow(o)
             }
         end
 
-        -- ═══ KEYBIND ═══
-        function tab:Keybind(o)
-            o = o or {}
-            local cur = o.CurrentKeybind or Enum.KeyCode.E
+        -- Keybind
+        function tab:Keybind(opt)
+            opt = opt or {}
+            local cur = opt.CurrentKeybind or Enum.KeyCode.E
             local listening = false
 
             local row = mk("TextButton", {
@@ -1880,14 +1781,14 @@ function AvenUI:CreateWindow(o)
             st(row, Theme.BorderSoft, 1)
 
             local tx = 14
-            if o.Icon then
+            if opt.Icon then
                 local h = mk("Frame", {
                     Size = UDim2.new(0, 16, 0, 16),
                     Position = UDim2.new(0, 14, 0.5, -8),
                     BackgroundTransparency = 1,
                     Parent = row,
                 })
-                Icon.Create(h, o.Icon, 16, Theme.SubText)
+                Icon.Create(h, opt.Icon, 16, Theme.SubText)
                 tx = 40
             end
 
@@ -1896,7 +1797,7 @@ function AvenUI:CreateWindow(o)
                 Position = UDim2.new(0, tx, 0, 0),
                 BackgroundTransparency = 1,
                 Font = Theme.FontMed,
-                Text = o.Name or "Keybind",
+                Text = opt.Name or "Keybind",
                 TextColor3 = Theme.Text,
                 TextSize = 12,
                 TextXAlignment = Enum.TextXAlignment.Left,
@@ -1939,16 +1840,16 @@ function AvenUI:CreateWindow(o)
                     keyLbl.TextColor3 = Theme.Accent
                     listening = false
                     tw(kStroke, 0.2, { Color = Theme.BorderSoft })
-                    task.spawn(o.Callback or function() end, cur)
+                    task.spawn(opt.Callback or function() end, cur)
                 end
             end)
 
             return { Get = function() return cur end }
         end
 
-        -- ═══ LABEL ═══
-        function tab:Label(o)
-            o = o or {}
+        -- Label
+        function tab:Label(opt)
+            opt = opt or {}
             local wrap = mk("Frame", {
                 Size = UDim2.new(1, -8, 0, 0),
                 BackgroundTransparency = 1,
@@ -1959,7 +1860,7 @@ function AvenUI:CreateWindow(o)
                 Size = UDim2.new(1, 0, 0, 0),
                 BackgroundTransparency = 1,
                 Font = Theme.Font,
-                Text = o.Text or "",
+                Text = opt.Text or "",
                 TextColor3 = Theme.SubText,
                 TextSize = 11,
                 TextWrapped = true,
@@ -1970,7 +1871,7 @@ function AvenUI:CreateWindow(o)
             pd(lbl, 4, 4, 4, 4)
         end
 
-        -- ═══ DIVIDER ═══
+        -- Divider
         function tab:Divider(txt)
             if txt then
                 local wrap = mk("Frame", {
