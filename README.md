@@ -8,7 +8,7 @@
 
 <br>
 
-[![Version](https://img.shields.io/badge/version-1.0.0-84cc16?style=for-the-badge&labelColor=0a0b0d)](https://github.com/Gixss/Aven-Ui/releases)
+[![Version](https://img.shields.io/badge/version-2.0.0-84cc16?style=for-the-badge&labelColor=0a0b0d)](https://github.com/Gixss/Aven-Ui/releases)
 [![License](https://img.shields.io/badge/license-MIT-84cc16?style=for-the-badge&labelColor=0a0b0d)](LICENSE)
 [![Lua](https://img.shields.io/badge/lua-5.1-2C2D72?style=for-the-badge&labelColor=0a0b0d&logo=lua&logoColor=white)](https://www.lua.org)
 [![Roblox](https://img.shields.io/badge/roblox-compatible-84cc16?style=for-the-badge&labelColor=0a0b0d)](https://www.roblox.com)
@@ -16,7 +16,7 @@
 
 <br>
 
-[Why](#why-avenui) · [Features](#features) · [Installation](#installation) · [Quick Start](#quick-start) · [Full Example](#full-example) · [Elements](#elements) · [Icons](#icons) · [Theme](#theme) · [API](#api-reference)
+[Why](#why-avenui) · [Features](#features) · [Installation](#installation) · [Quick Start](#quick-start) · [Full Example](#full-example) · [Elements](#elements) · [Icons](#icons) · [Config Storage](#config-storage) · [Theme](#theme) · [API](#api-reference)
 
 </div>
 
@@ -46,7 +46,7 @@ Setiap ikon digambar pixel-by-pixel menggunakan primitif `Frame` dan `UIStroke`.
 
 | Feature | English | Indonesia |
 |---|---|---|
-| Icons | 60+ hand-drawn vector icons | 60+ ikon vektor digambar manual |
+| Icons | 45+ hand-drawn Lucide-style icons | 45+ ikon Lucide-style digambar manual |
 | Size | Single file, zero dependencies | Satu file, tanpa dependensi |
 | Theme | Runtime swappable | Bisa diganti saat runtime |
 | Mobile | Touch-friendly | Ramah sentuhan |
@@ -55,6 +55,8 @@ Setiap ikon digambar pixel-by-pixel menggunakan primitif `Frame` dan `UIStroke`.
 | Window | Draggable, minimizable | Bisa digeser, bisa di-minimize |
 | Search | Built-in sidebar filter | Filter pencarian di sidebar |
 | Elements | 11 element types | 11 tipe elemen |
+| Storage | Auto-create `Aven UI` folder | Auto-bikin folder `Aven UI` |
+| Config | Save/load flags to disk | Simpan/muat flag ke disk |
 
 ---
 
@@ -106,9 +108,9 @@ Tab:Toggle({
 })
 ```
 
-> **English:** Run it — a window appears in the center of your screen. Drag by the top bar, minimize with the `-` button, hide with `Right Ctrl`.
+> **English:** Run it — a window appears in the center of your screen. Drag by the top bar, minimize with the `-` button, hide with `Right Ctrl`. A folder named `Aven UI` is automatically created in your executor workspace.
 >
-> **Indonesia:** Jalankan — window muncul di tengah layar. Geser dengan menahan top bar, minimize dengan tombol `-`, sembunyikan dengan `Ctrl Kanan`.
+> **Indonesia:** Jalankan — window muncul di tengah layar. Geser dengan menahan top bar, minimize dengan tombol `-`, sembunyikan dengan `Ctrl Kanan`. Folder bernama `Aven UI` otomatis dibuat di workspace executor.
 
 ---
 
@@ -125,7 +127,7 @@ local Window = AvenUI:CreateWindow({
     Name      = "Aven Hub",
     Subtitle  = "by Gixss",
     Icon      = "sparkle",
-    Width     = 560,
+    Width     = 580,
     Height    = 420,
     ToggleKey = Enum.KeyCode.RightControl,
 })
@@ -142,6 +144,7 @@ MainTab:Slider({
     Increment    = 1,
     Suffix       = " studs",
     CurrentValue = 16,
+    Flag         = "speed",
     Callback     = function(v) print("Speed:", v) end,
 })
 
@@ -152,12 +155,14 @@ MainTab:Slider({
     Increment    = 5,
     Suffix       = " jp",
     CurrentValue = 50,
+    Flag         = "jump",
 })
 
 MainTab:Toggle({
     Name         = "Infinite Jump",
     Icon         = "arrow-up",
     CurrentValue = false,
+    Flag         = "infJump",
     Callback     = function(state) print("Inf Jump:", state) end,
 })
 
@@ -165,6 +170,7 @@ MainTab:Toggle({
     Name         = "No Clip",
     Icon         = "shield",
     CurrentValue = false,
+    Flag         = "noClip",
 })
 
 -- Tab 2: Visual
@@ -213,20 +219,27 @@ MiscTab:Keybind({
     Callback       = function(key) print("Panic:", key.Name) end,
 })
 
-MiscTab:Divider("danger zone")
+MiscTab:Divider("config")
 
 MiscTab:Button({
-    Name     = "Reset All",
-    Icon     = "trash",
-    Danger   = true,
+    Name     = "Save Config",
+    Icon     = "download",
     Callback = function()
-        AvenUI:Notify({
-            Title    = "Reset",
-            Content  = "All settings cleared",
-            Icon     = "warning",
-            Accent   = Color3.fromRGB(239, 68, 68),
-            Duration = 3,
-        })
+        if Window:SaveConfig() then
+            AvenUI:Notify({
+                Title   = "Saved",
+                Content = "Config stored to Aven UI folder",
+                Icon    = "check",
+            })
+        end
+    end,
+})
+
+MiscTab:Button({
+    Name     = "Load Config",
+    Icon     = "upload",
+    Callback = function()
+        Window:LoadConfig()
     end,
 })
 ```
@@ -254,11 +267,11 @@ MiscTab:Button({
 
 ### English
 
-AvenUI ships with 60+ hand-drawn vector icons. Every icon is built from `Frame` primitives. Three ways to add an icon:
+AvenUI ships with 45+ hand-drawn Lucide-style icons. Thin strokes, rounded joints, clean look. Three ways to add an icon:
 
 ### Indonesia
 
-AvenUI hadir dengan 60+ ikon vektor yang digambar manual. Setiap ikon dibuat dari primitif `Frame`. Tiga cara menambahkan ikon:
+AvenUI hadir dengan 45+ ikon Lucide-style yang digambar manual. Garis tipis, ujung membulat, tampilan bersih. Tiga cara menambahkan ikon:
 
 ```lua
 Tab:Toggle({ Name = "Named",     Icon = "gear" })
@@ -269,32 +282,81 @@ Tab:Toggle({ Name = "Asset URL", Icon = "rbxassetid://1234567890" })
 ### Available Icon Names
 
 ```
-activity     aim          alert        arrow-down   arrow-left
-arrow-right  arrow-up     bell         bolt         cart
-check        chevron-down chevron-left chevron-right chevron-up
-chip         close        code         cog          combat
-copy         cpu          crosshair    crown        delete
-dev          diamond      discord      document     download
-edit         exit         eye          favorite     file
-filter       find         fire         flame        folder
+activity     alert        arrow-down   arrow-left   arrow-right
+arrow-up     bell         bolt         check        chevron-down
+chevron-left chevron-right chevron-up  chip         close
+code         cog          combat       copy         cpu
+crosshair    crown        delete       dev          diamond
+discord      download     edit         exit         eye
+file         filter       fire         flame        folder
 gear         gem          globe        grid         heart
 home         house        info         key          like
 lightning    link         list         location     lock
 map          menu         minus        moon         notif
-pause        pencil       pin          play         plus
-power        profile      protect      refresh      reload
-remove       script       search       secure       settings
-shield       shop         sparkle      star         stop
-sun          sword        sync         tag          target
+pause        pin          play         plus         power
+profile      protect      refresh      reload       remove
+script       search       settings     shield         sparkle
+star         stop         sun          sword        target
 terminal     tick         trash        upload       user
-view         vip          volume       warning      wifi
-x            zap
+view         vip          warning      x            zap
 ```
 
 Get the full list at runtime / Ambil daftar lengkap saat runtime:
 
 ```lua
 print(AvenUI.IconNames)
+```
+
+---
+
+## Config Storage
+
+### English
+
+AvenUI automatically creates a folder named `Aven UI` in the executor workspace the moment the library loads. You can save and load flags (toggle/slider values) as JSON without worrying about file paths.
+
+```lua
+-- Save all flags to Aven UI/config.json
+Window:SaveConfig()
+
+-- Load flags from Aven UI/config.json
+Window:LoadConfig()
+
+-- Manual file operations
+AvenUI:SaveFile("notes.txt", "hello world")
+local content = AvenUI:LoadFile("notes.txt")
+local files = AvenUI:ListFiles()
+```
+
+To make flags savable, add a `Flag` field to any Toggle or Slider:
+
+```lua
+Tab:Toggle({ Name = "Auto Farm", Flag = "autoFarm" })
+Tab:Slider({ Name = "Speed", Flag = "speed" })
+```
+
+### Indonesia
+
+AvenUI otomatis membuat folder bernama `Aven UI` di workspace executor begitu library dijalankan. Kamu bisa simpan dan muat flag (nilai toggle/slider) sebagai JSON tanpa memikirkan path file.
+
+```lua
+-- Simpan semua flag ke Aven UI/config.json
+Window:SaveConfig()
+
+-- Muat flag dari Aven UI/config.json
+Window:LoadConfig()
+
+-- Operasi file manual
+AvenUI:SaveFile("notes.txt", "hello world")
+local content = AvenUI:LoadFile("notes.txt")
+local files = AvenUI:ListFiles()
+```
+
+Supaya flag bisa disimpan, tambahkan field `Flag` ke Toggle atau Slider:
+
+```lua
+Tab:Toggle({ Name = "Auto Farm", Flag = "autoFarm" })
+Tab:Slider({ Name = "Speed", Flag = "speed" })
 ```
 
 ---
@@ -342,9 +404,6 @@ print(theme.Accent)
 | `Accent` | Brand accent | Warna aksen brand |
 | `AccentDim` | Dimmed accent | Aksen diredupkan |
 | `Danger` | Destructive action | Untuk aksi berbahaya |
-| `Warn` | Warning state | Untuk peringatan |
-| `Info` | Info state | Untuk informasi |
-| `Success` | Success state | Untuk keberhasilan |
 | `Radius` | Default corner radius | Radius sudut default |
 | `RadiusSm` | Small radius | Radius kecil |
 | `RadiusLg` | Large radius | Radius besar |
@@ -367,17 +426,17 @@ print(theme.Accent)
 
 **Indonesia:** Membuat tab di dalam window. Mengembalikan objek `Tab`.
 
-### `Window:SetTitle(text)`
+### `Window:SetTitle(text)` / `Window:SetSubtitle(text)`
 
-**English:** Updates the window title at runtime.
+**English:** Updates the title or subtitle at runtime.
 
-**Indonesia:** Mengubah judul window saat runtime.
+**Indonesia:** Mengubah judul atau subtitle saat runtime.
 
-### `Window:SetSubtitle(text)`
+### `Window:SaveConfig()` / `Window:LoadConfig()`
 
-**English:** Updates the window subtitle at runtime.
+**English:** Save/load all flagged values to/from `Aven UI/config.json`.
 
-**Indonesia:** Mengubah subtitle window saat runtime.
+**Indonesia:** Simpan/muat semua nilai flag ke/dari `Aven UI/config.json`.
 
 ### `Window:Destroy()`
 
@@ -391,23 +450,29 @@ print(theme.Accent)
 
 **Indonesia:** Menampilkan notifikasi toast.
 
-### `AvenUI:SetTheme(table)`
+### `AvenUI:SaveFile(name, content)`
 
-**English:** Merges a table into the active theme.
+**English:** Writes a file into the `Aven UI` folder.
 
-**Indonesia:** Menggabungkan tabel ke dalam tema aktif.
+**Indonesia:** Menulis file ke dalam folder `Aven UI`.
 
-### `AvenUI:SetAccent(color)`
+### `AvenUI:LoadFile(name)`
 
-**English:** Sets the primary accent color and recalculates derived colors.
+**English:** Reads a file from the `Aven UI` folder.
 
-**Indonesia:** Mengatur warna aksen utama dan menghitung ulang warna turunannya.
+**Indonesia:** Membaca file dari folder `Aven UI`.
 
-### `AvenUI:GetTheme()`
+### `AvenUI:ListFiles()`
 
-**English:** Returns the current theme table.
+**English:** Returns all file paths inside the `Aven UI` folder.
 
-**Indonesia:** Mengembalikan tabel tema saat ini.
+**Indonesia:** Mengembalikan semua path file di dalam folder `Aven UI`.
+
+### `AvenUI:SetTheme(table)` / `AvenUI:SetAccent(color)` / `AvenUI:GetTheme()`
+
+**English:** Manage the global theme at runtime.
+
+**Indonesia:** Mengatur tema global saat runtime.
 
 ---
 
@@ -426,9 +491,9 @@ print(theme.Accent)
 | Synapse | ✅ |
 | Vega X | ✅ |
 
-**English:** Works on PC and mobile. Fully touch-compatible.
+**English:** Works on PC and mobile. Config storage requires the executor to support `writefile` / `readfile`.
 
-**Indonesia:** Berjalan di PC dan mobile. Sepenuhnya kompatibel dengan sentuhan.
+**Indonesia:** Berjalan di PC dan mobile. Penyimpanan config butuh executor yang mendukung `writefile` / `readfile`.
 
 ---
 
